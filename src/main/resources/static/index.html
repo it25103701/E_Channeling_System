@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MediBook appointment booking">
+    <title>MediBook | Book an Appointment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="main-nav" aria-label="Primary navigation">
+            <a class="nav-link active" href="#booking">Book appointment</a>
+            <a class="nav-link" href="#appointments">My appointments</a><a class="nav-link" href="#reception">Receptionist list</a>
+        </nav>
+    </header>
+    <main class="page-shell">
+        <section class="page-intro"><p class="eyebrow">MEDIBOOK APPOINTMENTS</p><h1>Care that fits your day.</h1><p>Choose a service, find a convenient time, and reserve your visit in minutes.</p></section>
+        <div id="global-notice" class="notice" role="alert" hidden></div>
+        <section id="booking" class="booking-layout" aria-labelledby="booking-title">
+            <div class="booking-main">
+                <div class="section-heading"><div><p class="eyebrow">NEW APPOINTMENT</p><h2 id="booking-title">Book a consultation</h2></div><span class="required-note">* Required</span></div>
+                <div class="stepper" aria-label="Booking progress"><span class="step active" data-step-indicator="1"><b>1</b> Details</span><i></i><span class="step" data-step-indicator="2"><b>2</b> Review</span><i></i><span class="step" data-step-indicator="3"><b>3</b> Complete</span></div>
+                <form id="appointment-form" novalidate>
+                    <div id="details-step" class="form-step">
+                        <fieldset><legend>Appointment details</legend><div class="field-grid">
+                            <div class="field full"><span>Find a doctor <span>*</span></span><div class="doctor-search"><input id="doctor-search" type="search" placeholder="Search doctor by name"><select id="specialisation-filter" aria-label="Filter doctors by specialisation"><option value="">All specialisations</option></select></div><div id="doctor-list" class="doctor-list compact"></div><small class="field-error" data-error-for="doctor"></small></div>
+                            <label class="field full">Appointment type <span>*</span><select id="service" required><option value="">Select a service</option><option>General Consultation</option><option>Dental Consultation</option><option>Child Health Consultation</option><option>Women's Health Consultation</option><option>Nutrition Consultation</option></select><small class="field-error" data-error-for="service"></small></label>
+                            <label class="field">Preferred date <span>*</span><input id="date" type="date" required><small class="field-error" data-error-for="date"></small></label>
+                            <div class="field slot-field"><span class="field-label">Available time <span>*</span></span><div id="slot-list" class="slot-grid" aria-live="polite"><p class="field-hint">Select a date to see available times.</p></div><small class="field-error" data-error-for="time"></small></div>
+                        </div></fieldset>
+                        <fieldset><legend>Your details</legend><div class="field-grid">
+                            <label class="field">Full name <span>*</span><input id="name" type="text" autocomplete="name" placeholder="e.g. John Doe" required><small class="field-error" data-error-for="name"></small></label>
+                            <label class="field">Phone number <span>*</span><input id="phone" type="tel" autocomplete="tel" placeholder="e.g. 0771234567" required><small class="field-error" data-error-for="phone"></small></label>
+                            <label class="field full">Email address <span>*</span><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required><small class="field-error" data-error-for="email"></small></label>
+                            <label class="field full">Notes <em>Optional</em><textarea id="notes" rows="3" placeholder="Anything the care team should know?"></textarea></label>
+                        </div></fieldset>
+                        <div class="form-actions"><span class="secure-note">Your appointment details stay in this browser.</span><button class="button button-primary" type="submit">Review appointment <span>→</span></button></div>
+                    </div>
+                    <div id="review-step" class="form-step" hidden><div class="review-heading"><button type="button" class="back-link" id="back-to-details">← Edit details</button><p class="eyebrow">CHECK BEFORE YOU BOOK</p><h2>Review appointment</h2><p>Everything look right? Confirm below to reserve this time.</p></div><div id="review-card" class="review-card"></div><div class="form-actions"><button type="button" class="button button-secondary" id="review-edit">Edit details</button><button class="button button-primary" type="button" id="confirm-booking">Confirm appointment <span>→</span></button></div></div>
+                </form>
+                <div id="success-step" class="form-step success-panel" hidden><div class="success-icon">✓</div><p class="eyebrow">BOOKING CONFIRMED</p><h2>Your appointment is reserved.</h2><p>We have saved your appointment details in this browser.</p><div class="booking-id"><span>Appointment ID</span><strong id="booking-id"></strong></div><button class="button button-primary" id="new-appointment">Book another appointment</button><a class="text-link" href="#appointments" id="view-appointments">View my appointments</a></div>
+            </div>
+            <aside class="booking-aside"><div class="aside-kicker">A simpler way to plan care</div><h2>Good care starts with a good time.</h2><p>Choose a service and a time that works for you. You can review every detail before you confirm.</p><div class="aside-list"><div><b>01</b><span>Choose your service</span></div><div><b>02</b><span>Select a future time</span></div><div><b>03</b><span>Confirm your visit</span></div></div></aside>
+        </section>
+        <section id="appointments" class="appointments-section" aria-labelledby="appointments-title"><div class="section-heading"><div><p class="eyebrow">SAVED IN THIS BROWSER</p><h2 id="appointments-title">My appointments</h2></div><span id="appointment-count" class="muted"></span></div><div class="appointment-filters"><input id="appointment-search" type="search" placeholder="Search appointment ID"><input id="appointment-date-filter" type="date"><select id="appointment-status-filter"><option value="">All statuses</option><option value="Confirmed">Confirmed</option><option value="Rescheduled">Rescheduled</option><option value="Cancelled">Cancelled</option></select></div><div id="appointment-list"></div></section>
+        <section id="reception" class="appointments-section" aria-labelledby="reception-title"><div class="section-heading"><div><p class="eyebrow">RECEPTION DESK</p><h2 id="reception-title">Daily appointment list</h2></div></div><div class="appointment-filters"><input id="reception-date" type="date"><select id="reception-doctor"><option value="">All doctors</option></select></div><div id="reception-list"></div></section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
