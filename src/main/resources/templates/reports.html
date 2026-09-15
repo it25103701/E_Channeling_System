@@ -1,91 +1,122 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MediBook - Report &amp; Analytics</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>MediBook Analytics & Reports</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 25px; }
+        .card-custom { border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .card-header-blue { background-color: #0d6efd; color: white; font-weight: 600; padding: 12px 20px; border-radius: 9px 9px 0 0; }
+        .table thead th { background-color: #e2e8f0; color: #1e293b; font-weight: 600; border-bottom: none; }
+    </style>
 </head>
-<body class="bg-light p-4">
-<div class="container bg-white p-4 rounded shadow-sm">
+<body>
+
+<div class="container-fluid">
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="text-primary mb-0">MediBook Analytics &amp; Reports</h2>
-            <small class="text-muted">UC-06: Hospital Management &amp; Administrative Insights</small>
+            <h2 class="text-primary fw-bold mb-1">MediBook Analytics &amp; Reports</h2>
+            <p class="text-muted mb-0">UC-06: Hospital Management &amp; Administrative Insights</p>
         </div>
-        <span class="badge bg-success fs-6">Individual Progress: 75% Done</span>
     </div>
 
-    <!-- CREATE / GENERATE FORM -->
-    <div class="card mb-4 border-primary">
-        <div class="card-header bg-primary text-white">Generate Operational / Financial Report</div>
-        <div class="card-body">
-            <form th:action="@{/reports/generate}" th:object="${newReport}" method="post" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Report Category</label>
-                    <select class="form-select" th:field="*{reportType}" required>
-                        <option value="Operational">Operational / Bookings</option>
-                        <option value="Financial">Financial / Revenue</option>
-                        <option value="Satisfaction">Patient Satisfaction</option>
-                        <option value="Claims">Insurance Claims</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Department</label>
-                    <select class="form-select" th:field="*{department}" required>
-                        <option value="All Departments">All Departments</option>
-                        <option value="Cardiology">Cardiology</option>
-                        <option value="Pediatrics">Pediatrics</option>
-                        <option value="Neurology">Neurology</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Start Date</label>
-                    <input type="date" class="form-control" th:field="*{startDate}" required />
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">End Date</label>
-                    <input type="date" class="form-control" th:field="*{endDate}" required />
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Generate</button>
+    <!-- Generate Report Form Card -->
+    <div class="card card-custom mb-4">
+        <div class="card-header-blue">
+            <i class="fa-solid fa-file-circle-plus me-2"></i>Generate Operational / Financial Report
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/reports/generate}" method="post">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold text-secondary">Report Category</label>
+                        <select name="category" class="form-select">
+                            <option value="Operational / Bookings">Operational / Bookings</option>
+                            <option value="Financial / Revenue">Financial / Revenue</option>
+                            <option value="Doctor Performance">Doctor Performance</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold text-secondary">Department</label>
+                        <select name="department" class="form-select">
+                            <option value="All Departments">All Departments</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="General OPD">General OPD</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold text-secondary">Start Date</label>
+                        <input type="date" name="startDate" class="form-control" value="2026-09-01" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold text-secondary">End Date</label>
+                        <input type="date" name="endDate" class="form-control" value="2026-09-15" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 fw-semibold">
+                            <i class="fa-solid fa-bolt me-1"></i> Generate
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- READ TABLE -->
-    <h4>Generated Reports Repository</h4>
-    <table class="table table-bordered table-hover mt-3">
-        <thead class="table-secondary">
-        <tr>
-            <th>ID</th>
-            <th>Type</th>
-            <th>Department</th>
-            <th>Date Range</th>
-            <th>Total Appts</th>
-            <th>Revenue (LKR)</th>
-            <th>Satisfaction</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${#lists.isEmpty(reports)}">
-            <td colspan="8" class="text-center text-muted">No reports generated yet. Use the form above to generate one.</td>
-        </tr>
-        <tr th:each="r : ${reports}">
-            <td th:text="${r.id}"></td>
-            <td th:text="${r.reportType}"></td>
-            <td th:text="${r.department}"></td>
-            <td th:text="${r.startDate + ' to ' + r.endDate}"></td>
-            <td th:text="${r.totalAppointments}"></td>
-            <td th:text="${#numbers.formatDecimal(r.totalRevenue, 1, 2)}"></td>
-            <td th:text="${#numbers.formatDecimal(r.satisfactionRate, 1, 1) + '%'}"></td>
-            <td>
-                <a th:href="@{'/reports/delete/' + ${r.id}}" class="btn btn-sm btn-danger" onclick="return confirm('Archive/delete this report?')">Delete</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- Reports Table -->
+    <h4 class="fw-bold text-dark mb-3">Generated Reports Repository</h4>
+    <div class="table-responsive bg-white rounded shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Department</th>
+                <th>Date Range</th>
+                <th>Total Appts</th>
+                <th>Revenue (LKR)</th>
+                <th>Satisfaction</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rpt : ${reports}">
+                <td class="fw-bold" th:text="${rpt.id}">1</td>
+                <td th:text="${rpt.reportType}">Operational</td>
+                <td th:text="${rpt.department}">All Departments</td>
+                <td th:text="${rpt.dateRange}">9/1/26 to 9/15/26</td>
+                <td>
+                    <span class="badge bg-light text-dark border px-2 py-1" th:text="${rpt.totalAppointments}">0</span>
+                </td>
+                <td class="text-success fw-semibold" th:text="${#numbers.formatDecimal(rpt.totalRevenue, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                <td>
+                    <span class="text-primary fw-semibold" th:text="${rpt.satisfactionRate + '%'}">0.0%</span>
+                </td>
+                <td>
+                    <form th:action="@{'/reports/delete/' + ${rpt.id}}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger px-3" onclick="return confirm('Delete this report record?');">
+                            <i class="fa-solid fa-trash me-1"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(reports)}">
+                <td colspan="8" class="text-center py-4 text-muted">
+                    No reports generated yet. Select a category and date range above and click <strong>Generate</strong>.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
 </body>
 </html>

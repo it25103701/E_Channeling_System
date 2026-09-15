@@ -1,4 +1,4 @@
-package com.echanneling.e_channeling_system.model;
+package com.echanneling.e_channeling_system.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

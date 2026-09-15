@@ -1,7 +1,7 @@
 package com.echanneling.e_channeling_system.controller;
 
-import com.echanneling.e_channeling_system.dao.DoctorScheduleRepository;
-import com.echanneling.e_channeling_system.model.DoctorSchedule;
+import com.echanneling.e_channeling_system.repository.DoctorScheduleRepository;
+import com.echanneling.e_channeling_system.entity.DoctorSchedule;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
