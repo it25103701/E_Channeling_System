@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Claims - Financial Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        form { margin: 4px 0; }
+        input { width: 110px; }
+    </style>
+</head>
+<body>
+<h2>Insurance Claims (Financial Admin)</h2>
+<table>
+    <tr>
+        <th>ID</th><th>Patient</th><th>Insurer</th><th>Policy</th><th>Expiry</th>
+        <th>Balance</th><th>Fee</th><th>Coverage %</th><th>Net payable</th>
+        <th>Status</th><th>Reason</th><th>Actions</th>
+    </tr>
+    <tr th:each="c : ${claims}">
+        <td th:text="${c.id}"></td>
+        <td th:text="${c.patientName}"></td>
+        <td th:text="${c.insurerName}"></td>
+        <td th:text="${c.policyNumber}"></td>
+        <td th:text="${c.policyExpiryDate}"></td>
+        <td th:text="${c.deductibleBalance}"></td>
+        <td th:text="${c.channelingFee}"></td>
+        <td th:text="${c.coveragePercentage}"></td>
+        <td th:text="${c.netPayable}"></td>
+        <td th:text="${c.status}"></td>
+        <td th:text="${c.rejectionReason}"></td>
+        <td th:if="${c.status == 'PENDING' or c.status == 'NEEDS_REVIEW'}">
+            <form th:action="@{/insurance/admin/claims/{id}/approve(id=${c.id})}" method="post">
+                <input type="number" name="coveragePercentage" min="0" max="100" step="0.1" placeholder="Coverage %" required>
+                <button type="submit">Approve</button>
+            </form>
+            <form th:action="@{/insurance/admin/claims/{id}/reject(id=${c.id})}" method="post">
+                <input type="text" name="reason" placeholder="Reason" required>
+                <button type="submit">Reject</button>
+            </form>
+        </td>
+        <td th:unless="${c.status == 'PENDING' or c.status == 'NEEDS_REVIEW'}">Done</td>
+    </tr>
+</table>
+</body>
+</html>
