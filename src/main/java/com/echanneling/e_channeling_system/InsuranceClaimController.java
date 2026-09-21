@@ -62,4 +62,11 @@ public class InsuranceClaimController {
         claimService.cancelClaim(id, reason);
         return "redirect:/insurance/admin/claims";
     }
+    // Financial Admin: view the audit log
+    @GetMapping("/admin/audit-log")
+    public String auditLog(Model model) {
+        model.addAttribute("logs", claimService.getAuditLogs());
+        return "insurance-audit-log";
+    }
 }
+

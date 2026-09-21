@@ -9,9 +9,12 @@ import java.util.List;
 public class InsuranceClaimService {
 
     private final InsuranceClaimRepository claimRepository;
+    private final ClaimAuditLogRepository auditLogRepository;
 
-    public InsuranceClaimService(InsuranceClaimRepository claimRepository) {
+    public InsuranceClaimService(InsuranceClaimRepository claimRepository,
+                                 ClaimAuditLogRepository auditLogRepository) {
         this.claimRepository = claimRepository;
+        this.auditLogRepository = auditLogRepository;
     }
 
     // CREATE: patient submits a pre-authorisation claim
@@ -25,11 +28,16 @@ public class InsuranceClaimService {
             claim.setStatus("REJECTED");
             claim.setRejectionReason("Policy is expired or invalid");
         } else if (claim.getDeductibleBalance() < claim.getChannelingFee()) {
-            claim.setStatus("NEEDS_REVIEW");   // deductible balance is not enough
+            claim.setStatus("NEEDS_REVIEW");
         } else {
             claim.setStatus("PENDING");
         }
-        return claimRepository.save(claim);
+
+        InsuranceClaim saved = claimRepository.save(claim);
+        if ("REJECTED".equals(saved.getStatus())) {
+            logAction(saved.getId(), "REJECTED", saved.getRejectionReason(), "System");
+        }
+        return saved;
     }
 
     // READ
@@ -46,6 +54,10 @@ public class InsuranceClaimService {
                 .orElseThrow(() -> new IllegalArgumentException("Claim not found: " + id));
     }
 
+    public List<ClaimAuditLog> getAuditLogs() {
+        return auditLogRepository.findAllByOrderByActionTimeDesc();
+    }
+
     // UPDATE: Financial Admin approves or adjusts the coverage percentage
     public InsuranceClaim approveClaim(Long id, double coveragePercentage) {
         if (coveragePercentage < 0 || coveragePercentage > 100) {
@@ -55,14 +67,17 @@ public class InsuranceClaimService {
 
         double covered = claim.getChannelingFee() * coveragePercentage / 100.0;
         if (covered > claim.getDeductibleBalance()) {
-            covered = claim.getDeductibleBalance();   // cannot cover more than the balance
+            covered = claim.getDeductibleBalance();
         }
 
         claim.setCoveragePercentage(coveragePercentage);
         claim.setNetPayable(claim.getChannelingFee() - covered);
         claim.setStatus("APPROVED");
         claim.setRejectionReason(null);
-        return claimRepository.save(claim);
+        InsuranceClaim saved = claimRepository.save(claim);
+
+        logAction(id, "APPROVED", "Coverage set to " + coveragePercentage + "%", "Financial Admin");
+        return saved;
     }
 
     // DELETE (soft): reject or cancel with a reason
@@ -72,7 +87,10 @@ public class InsuranceClaimService {
         claim.setRejectionReason(reason);
         claim.setCoveragePercentage(0);
         claim.setNetPayable(claim.getChannelingFee());
-        return claimRepository.save(claim);
+        InsuranceClaim saved = claimRepository.save(claim);
+
+        logAction(id, "REJECTED", reason, "Financial Admin");
+        return saved;
     }
 
     public InsuranceClaim cancelClaim(Long id, String reason) {
@@ -81,6 +99,13 @@ public class InsuranceClaimService {
         claim.setRejectionReason(reason);
         claim.setCoveragePercentage(0);
         claim.setNetPayable(claim.getChannelingFee());
-        return claimRepository.save(claim);
+        InsuranceClaim saved = claimRepository.save(claim);
+
+        logAction(id, "CANCELLED", reason, "Financial Admin");
+        return saved;
+    }
+
+    private void logAction(Long claimId, String action, String reason, String actedBy) {
+        auditLogRepository.save(new ClaimAuditLog(claimId, action, reason, actedBy));
     }
 }
