@@ -1,5 +1,6 @@
 package com.echanneling.e_channeling_system;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class InsuranceClaim {
     // Policy details submitted by the patient
     private String policyNumber;
     private String insurerName;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate policyExpiryDate;
     private double deductibleBalance;
 
