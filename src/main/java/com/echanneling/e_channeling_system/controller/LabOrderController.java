@@ -3,9 +3,16 @@ package com.echanneling.e_channeling_system.controller;
 import com.echanneling.e_channeling_system.entity.LabOrder;
 import com.echanneling.e_channeling_system.repository.AppointmentRepository;
 import com.echanneling.e_channeling_system.repository.LabOrderRepository;
+import com.echanneling.e_channeling_system.pattern.factory.DiagnosticTest;
+import com.echanneling.e_channeling_system.pattern.factory.DiagnosticTestFactory;
+import com.echanneling.e_channeling_system.pattern.strategy.OrderProcessingContext;
+import com.echanneling.e_channeling_system.pattern.strategy.RoutinePriorityStrategy;
+import com.echanneling.e_channeling_system.pattern.strategy.StatUrgentPriorityStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/lab-orders")
@@ -28,13 +35,37 @@ public class LabOrderController {
         return "lab-orders";
     }
 
-    // CREATE: Place a new lab diagnostic order
+    // CREATE: Place a new lab diagnostic order using Factory & Strategy patterns
     @PostMapping("/create")
     public String createLabOrder(@RequestParam String testCategory,
-                                 @RequestParam String department,
-                                 @RequestParam String orderDate,
-                                 @RequestParam String expectedDate,
+                                 @RequestParam(required = false) String department,
+                                 @RequestParam(required = false) String orderDate,
+                                 @RequestParam(required = false) String expectedDate,
                                  @RequestParam String urgencyLevel) {
+
+        // 1. Factory Pattern: Instantiate test profile details (department & turnaround)
+        DiagnosticTest diagnosticTest = DiagnosticTestFactory.createTest(testCategory);
+        String finalDepartment = (department != null && !department.isBlank())
+                ? department
+                : diagnosticTest.getDefaultDepartment();
+
+        // Parse order date (fallback to today if missing)
+        LocalDate parsedOrderDate = (orderDate != null && !orderDate.isBlank())
+                ? LocalDate.parse(orderDate)
+                : LocalDate.now();
+
+        // 2. Strategy Pattern: Select turnaround algorithm based on clinical urgency
+        OrderProcessingContext context = new OrderProcessingContext();
+        if ("STAT".equalsIgnoreCase(urgencyLevel) || "URGENT".equalsIgnoreCase(urgencyLevel)) {
+            context.setStrategy(new StatUrgentPriorityStrategy());
+        } else {
+            context.setStrategy(new RoutinePriorityStrategy());
+        }
+
+        // Auto-calculate expected completion date if not provided
+        String finalExpectedDate = (expectedDate != null && !expectedDate.isBlank())
+                ? expectedDate
+                : context.determineTargetDate(parsedOrderDate, diagnosticTest.getTurnaroundHours()).toString();
 
         // Link to the latest appointment or default reference
         long latestApptId = appointmentRepository.count();
@@ -42,9 +73,9 @@ public class LabOrderController {
 
         LabOrder order = new LabOrder(
                 testCategory,
-                department,
-                orderDate,
-                expectedDate,
+                finalDepartment,
+                parsedOrderDate.toString(),
+                finalExpectedDate,
                 urgencyLevel,
                 refId,
                 "PENDING"
