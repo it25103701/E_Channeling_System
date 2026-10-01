@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/lab-orders")
@@ -22,6 +23,8 @@ public class LabOrderController {
 
     private final LabOrderRepository labOrderRepository;
     private final AppointmentRepository appointmentRepository;
+
+    private static final Set<String> ALLOWED_URGENCIES = Set.of("ROUTINE", "URGENT", "STAT");
 
     public LabOrderController(LabOrderRepository labOrderRepository,
                               AppointmentRepository appointmentRepository) {
@@ -37,7 +40,7 @@ public class LabOrderController {
         return "lab-orders";
     }
 
-    // CREATE: Place a new lab diagnostic order with Factory, Strategy, and validation
+    // CREATE: Place a new lab diagnostic order with multi-tier validations
     @PostMapping("/create")
     public String createLabOrder(@RequestParam String testCategory,
                                  @RequestParam(required = false) String department,
@@ -46,71 +49,90 @@ public class LabOrderController {
                                  @RequestParam String urgencyLevel,
                                  RedirectAttributes redirectAttributes) {
 
-        // 1. Mandatory input guard
+        // 1. Mandatory category validation
         if (testCategory == null || testCategory.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Diagnostic test category is mandatory.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Error: A diagnostic test category must be chosen.");
             return "redirect:/lab-orders";
         }
 
-        // 2. Factory Pattern: Determine default department and standard turnaround
+        // 2. Urgency level validation
+        String normalizedUrgency = urgencyLevel != null ? urgencyLevel.trim().toUpperCase() : "ROUTINE";
+        if (!ALLOWED_URGENCIES.contains(normalizedUrgency)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Error: Invalid urgency level specified.");
+            return "redirect:/lab-orders";
+        }
+
+        // 3. Factory Pattern: assign default department
         DiagnosticTest diagnosticTest = DiagnosticTestFactory.createTest(testCategory);
         String finalDepartment = (department != null && !department.isBlank())
                 ? department.trim()
                 : diagnosticTest.getDefaultDepartment();
 
-        // 3. Date validation & chronological check
+        // 4. Order date parsing & past date validation
+        LocalDate today = LocalDate.now();
         LocalDate parsedOrderDate;
         try {
             parsedOrderDate = (orderDate != null && !orderDate.isBlank())
                     ? LocalDate.parse(orderDate)
-                    : LocalDate.now();
+                    : today;
         } catch (DateTimeParseException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Invalid order date format. Use YYYY-MM-DD.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Format Error: Order date must follow YYYY-MM-DD.");
             return "redirect:/lab-orders";
         }
 
-        // 4. Strategy Pattern: Resolve turnaround schedule based on urgency
+        if (parsedOrderDate.isBefore(today.minusDays(1))) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Guard: Order requisition date cannot be set in the past.");
+            return "redirect:/lab-orders";
+        }
+
+        // 5. Strategy Pattern: Turnaround calculation
         OrderProcessingContext context = new OrderProcessingContext();
-        if ("STAT".equalsIgnoreCase(urgencyLevel) || "URGENT".equalsIgnoreCase(urgencyLevel)) {
+        if ("STAT".equals(normalizedUrgency) || "URGENT".equals(normalizedUrgency)) {
             context.setStrategy(new StatUrgentPriorityStrategy());
         } else {
             context.setStrategy(new RoutinePriorityStrategy());
         }
 
+        // 6. Expected date validation & STAT urgency constraint
         LocalDate parsedExpectedDate;
         try {
             parsedExpectedDate = (expectedDate != null && !expectedDate.isBlank())
                     ? LocalDate.parse(expectedDate)
                     : context.determineTargetDate(parsedOrderDate, diagnosticTest.getTurnaroundHours());
         } catch (DateTimeParseException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Invalid expected completion date format.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Format Error: Expected completion date is invalid.");
             return "redirect:/lab-orders";
         }
 
-        // Clinical Rule: Completion date cannot precede the order date
+        // Chronological rule: Expected date cannot precede order date
         if (parsedExpectedDate.isBefore(parsedOrderDate)) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Validation Error: Expected completion date cannot precede the order requisition date.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Chronological Error: Result date cannot precede the order requisition date.");
             return "redirect:/lab-orders";
         }
 
-        // Link to existing consultation appointment or default ID
+        // STAT clinical protocol rule: STAT orders must be finalized same-day or within 24 hours
+        if ("STAT".equals(normalizedUrgency) && parsedExpectedDate.isAfter(parsedOrderDate.plusDays(1))) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Protocol Alert: STAT (Emergency) orders cannot have a turnaround exceeding 24 hours.");
+            return "redirect:/lab-orders";
+        }
+
+        // Link to active appointment reference
         long latestApptId = appointmentRepository.count();
         Long refId = latestApptId > 0 ? latestApptId : 101L;
 
-        // Persist validated order
+        // Persist verified entity
         LabOrder order = new LabOrder(
                 testCategory.trim(),
                 finalDepartment,
                 parsedOrderDate.toString(),
                 parsedExpectedDate.toString(),
-                urgencyLevel.toUpperCase().trim(),
+                normalizedUrgency,
                 refId,
                 "PENDING"
         );
 
         labOrderRepository.save(order);
-        redirectAttributes.addFlashAttribute("successMessage", "Diagnostic order successfully validated and registered.");
+        redirectAttributes.addFlashAttribute("successMessage", "Order #" + testCategory.trim() + " registered and verified successfully.");
         return "redirect:/lab-orders";
     }
 
@@ -125,7 +147,7 @@ public class LabOrderController {
             }
             labOrderRepository.save(order);
         });
-        redirectAttributes.addFlashAttribute("successMessage", "Order lifecycle status updated successfully.");
+        redirectAttributes.addFlashAttribute("successMessage", "Order lifecycle transitioned successfully.");
         return "redirect:/lab-orders";
     }
 
