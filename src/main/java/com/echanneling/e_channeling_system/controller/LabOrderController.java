@@ -68,20 +68,23 @@ public class LabOrderController {
                 ? department.trim()
                 : diagnosticTest.getDefaultDepartment();
 
-        // 4. Order date parsing & past date validation
-        LocalDate today = LocalDate.now();
-        LocalDate parsedOrderDate;
-        try {
-            parsedOrderDate = (orderDate != null && !orderDate.isBlank())
-                    ? LocalDate.parse(orderDate)
-                    : today;
-        } catch (DateTimeParseException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Format Error: Order date must follow YYYY-MM-DD.");
+        // 4. Mandatory Order Date & Past Date Guard
+        if (orderDate == null || orderDate.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Order requisition date is mandatory and cannot be left blank.");
             return "redirect:/lab-orders";
         }
 
-        if (parsedOrderDate.isBefore(today.minusDays(1))) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Guard: Order requisition date cannot be set in the past.");
+        LocalDate today = LocalDate.now();
+        LocalDate parsedOrderDate;
+        try {
+            parsedOrderDate = LocalDate.parse(orderDate.trim());
+        } catch (DateTimeParseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Invalid order date format. Must follow standard YYYY-MM-DD.");
+            return "redirect:/lab-orders";
+        }
+
+        if (parsedOrderDate.isBefore(today)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Guard: Order date cannot be set in the past. Laboratory requisitions require current or scheduled dates.");
             return "redirect:/lab-orders";
         }
 
@@ -97,7 +100,7 @@ public class LabOrderController {
         LocalDate parsedExpectedDate;
         try {
             parsedExpectedDate = (expectedDate != null && !expectedDate.isBlank())
-                    ? LocalDate.parse(expectedDate)
+                    ? LocalDate.parse(expectedDate.trim())
                     : context.determineTargetDate(parsedOrderDate, diagnosticTest.getTurnaroundHours());
         } catch (DateTimeParseException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Format Error: Expected completion date is invalid.");
