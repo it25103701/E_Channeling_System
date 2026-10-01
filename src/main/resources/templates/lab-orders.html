@@ -1,14 +1,354 @@
-<!-- Notification & Validation Feedback Banners -->
-<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-    <i class="fas fa-exclamation-triangle me-2"></i>
-    <strong class="me-1">Validation Error:</strong>
-    <span th:text="${errorMessage}">Validation Error message</span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBook ERP - Clinical Laboratory & Diagnostics</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-bg: #111c2e;
+            --sidebar-hover: #1b2a42;
+            --primary-accent: #2563eb;
+            --main-bg: #f8fafc;
+        }
+        body {
+            background-color: var(--main-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: #94a3b8;
+            min-height: 100vh;
+            flex-shrink: 0;
+        }
+        .sidebar-brand {
+            padding: 1.25rem 1.5rem;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sidebar-heading {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            padding: 1.25rem 1.5rem 0.5rem;
+        }
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-link-custom:hover {
+            background-color: var(--sidebar-hover);
+            color: #fff;
+        }
+        .nav-link-custom.active {
+            background-color: var(--primary-accent);
+            color: #fff;
+            border-radius: 0.5rem;
+            margin: 0 0.75rem;
+            padding: 0.75rem 1rem;
+        }
+        .badge-sub {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            display: block;
+        }
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .table th {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="d-flex">
 
-<div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show my-3" role="alert">
-    <i class="fas fa-check-circle me-2"></i>
-    <strong class="me-1">Success:</strong>
-    <span th:text="${successMessage}">Operation successful</span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+<!-- Sidebar Navigation -->
+<aside class="sidebar d-flex flex-column">
+    <div class="sidebar-brand">
+        <i class="fas fa-plus-square text-primary fs-4 me-2"></i>
+        <span>MediBook</span>
+        <span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">HOSPITAL ERP V2.4</span>
+    </div>
+
+    <div class="sidebar-heading">Core Clinical Operations</div>
+    <a th:href="@{/lab-orders}" class="nav-link-custom active">
+        <i class="fas fa-flask-vial me-3"></i>
+        <div>
+            <div>Lab Orders</div>
+            <span class="badge-sub">UC-06 (Akthar)</span>
+        </div>
+    </a>
+    <a href="#" class="nav-link-custom">
+        <i class="fas fa-calendar-check me-3 text-info"></i>
+        <div>
+            <div>Appointments</div>
+            <span class="badge-sub">UC-01 (Damsana)</span>
+        </div>
+    </a>
+    <a href="#" class="nav-link-custom">
+        <i class="fas fa-user-md me-3 text-warning"></i>
+        <div>
+            <div>Doctor Schedules</div>
+            <span class="badge-sub">UC-03 (Hamdhan)</span>
+        </div>
+    </a>
+    <a href="#" class="nav-link-custom">
+        <i class="fas fa-bullhorn me-3 text-danger"></i>
+        <div>
+            <div>Notifications</div>
+            <span class="badge-sub">UC-05 (Amasha)</span>
+        </div>
+    </a>
+
+    <div class="sidebar-heading mt-3">Persistence & Storage</div>
+    <a href="/h2-console" target="_blank" class="nav-link-custom">
+        <i class="fas fa-database me-3 text-light"></i>
+        <div>
+            <div>H2 DB Console</div>
+            <span class="badge-sub">jdbc:h2:mem:medibookdb</span>
+        </div>
+    </a>
+
+    <div class="mt-auto p-3 border-top border-secondary border-opacity-25 text-muted small">
+        <div><i class="fas fa-code-branch me-1"></i> Team: <strong>MLB-B4G1-07</strong></div>
+        <div style="font-size: 0.75rem;">Spring Boot &bull; JPA &bull; H2</div>
+    </div>
+</aside>
+
+<!-- Main Content Container -->
+<main class="content-area">
+    <!-- Top Operational Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">Clinical Diagnostic & Laboratory Subsystem</h3>
+            <p class="text-muted small mb-0">Use Case 06: Test requisitioning, urgency scheduling, and diagnostic tracking</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                    <i class="fas fa-shield-halved me-1"></i> System Online
+                </span>
+            <span class="badge bg-dark text-white px-3 py-2">
+                    <i class="fas fa-user-shield me-1"></i> Admin Portal
+                </span>
+        </div>
+    </div>
+
+    <!-- Notification & Validation Feedback Banners -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show my-3" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong class="me-1">Validation Error:</strong>
+        <span th:text="${errorMessage}">Validation Error message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show my-3" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong class="me-1">Success:</strong>
+        <span th:text="${successMessage}">Operation successful</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Metrics Overview Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-semibold">Active Lab Orders</div>
+                        <div class="fs-4 fw-bold text-dark mt-1" th:text="${#lists.size(labOrders)}">0</div>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 text-primary rounded p-3">
+                        <i class="fas fa-vial fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-semibold">Linked Consultations</div>
+                        <div class="fs-4 fw-bold text-dark mt-1" th:text="${appointmentCount}">0</div>
+                    </div>
+                    <div class="bg-info bg-opacity-10 text-info rounded p-3">
+                        <i class="fas fa-notes-medical fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-semibold">Active Patterns</div>
+                        <div class="fs-6 fw-bold text-dark mt-1">Factory + Strategy</div>
+                    </div>
+                    <div class="bg-success bg-opacity-10 text-success rounded p-3">
+                        <i class="fas fa-layer-group fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Placement Form Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="card-title fw-bold mb-0 text-dark">
+                <i class="fas fa-file-medical text-primary me-2"></i>Issue Diagnostic Test Requisition
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/lab-orders/create}" method="post" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-secondary">Diagnostic Test Category *</label>
+                    <select name="testCategory" class="form-select" required>
+                        <option value="" disabled selected>-- Select Diagnostic Category --</option>
+                        <option value="Full Blood Count (FBC)">Full Blood Count (FBC) - Pathology</option>
+                        <option value="Lipid Profile">Lipid Profile - Biochemistry</option>
+                        <option value="12-Lead ECG">12-Lead ECG - Cardiology</option>
+                        <option value="Chest X-Ray">Chest X-Ray - Radiology</option>
+                        <option value="Ultrasound Abdomen">Ultrasound Abdomen - Imaging</option>
+                    </select>
+                    <div class="form-text" style="font-size: 0.75rem;">Handled dynamically via Factory Pattern.</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-secondary">Department Override (Optional)</label>
+                    <input type="text" name="department" class="form-control" placeholder="Leave empty for auto-assignment">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-secondary">Urgency Level *</label>
+                    <select name="urgencyLevel" class="form-select" required>
+                        <option value="ROUTINE" selected>ROUTINE (Standard turnaround)</option>
+                        <option value="URGENT">URGENT (Expedited)</option>
+                        <option value="STAT">STAT (Emergency - Immediate)</option>
+                    </select>
+                    <div class="form-text" style="font-size: 0.75rem;">Calculated via Strategy Pattern.</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-secondary">Order Date</label>
+                    <input type="date" name="orderDate" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-secondary">Expected Result Date (Optional)</label>
+                    <input type="date" name="expectedDate" class="form-control">
+                    <div class="form-text" style="font-size: 0.75rem;">Leave empty for algorithmic Strategy auto-calculation.</div>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-plus-circle me-1"></i> Issue Diagnostic Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Diagnostic Orders Table Card -->
+    <div class="card">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="card-title fw-bold mb-0 text-dark">
+                <i class="fas fa-list-check text-primary me-2"></i>Active Diagnostic Worklist
+            </h5>
+            <span class="badge bg-light text-secondary border">UC-06 Ledger</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th class="ps-4">ID</th>
+                    <th>Diagnostic Test</th>
+                    <th>Department</th>
+                    <th>Requisition Date</th>
+                    <th>Target Date</th>
+                    <th>Urgency</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${labOrders}">
+                    <td class="ps-4 fw-bold text-secondary" th:text="'#LAB-' + ${order.id}">#LAB-1</td>
+                    <td>
+                        <span class="fw-semibold text-dark" th:text="${order.testCategory}">Full Blood Count</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border" th:text="${order.department}">Pathology</span>
+                    </td>
+                    <td th:text="${order.orderDate}">2026-10-01</td>
+                    <td class="fw-semibold text-primary" th:text="${order.expectedDate}">2026-10-03</td>
+                    <td>
+                        <span th:if="${order.urgencyLevel == 'STAT'}" class="badge bg-danger">STAT</span>
+                        <span th:if="${order.urgencyLevel == 'URGENT'}" class="badge bg-warning text-dark">URGENT</span>
+                        <span th:if="${order.urgencyLevel == 'ROUTINE'}" class="badge bg-secondary">ROUTINE</span>
+                    </td>
+                    <td>
+                        <span th:if="${order.status == 'PENDING'}" class="badge bg-warning-subtle text-warning border border-warning-subtle">PENDING</span>
+                        <span th:if="${order.status == 'SAMPLE_COLLECTED'}" class="badge bg-info-subtle text-info border border-info-subtle">SAMPLE COLLECTED</span>
+                        <span th:if="${order.status == 'COMPLETED'}" class="badge bg-success-subtle text-success border border-success-subtle">COMPLETED</span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="d-inline-flex gap-2">
+                            <form th:action="@{'/lab-orders/advance-status/' + ${order.id}}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Advance Lifecycle Status">
+                                    <i class="fas fa-forward me-1"></i> Advance
+                                </button>
+                            </form>
+                            <form th:action="@{'/lab-orders/delete/' + ${order.id}}" method="post" class="d-inline" onsubmit="return confirm('Revoke this diagnostic requisition?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Revoke Order">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(labOrders)}">
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3 text-secondary opacity-50 d-block"></i>
+                        No active diagnostic orders found. Use the requisition form above to place an order.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
