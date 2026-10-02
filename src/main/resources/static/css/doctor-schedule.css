@@ -1,0 +1,161 @@
+/* ================================
+   Doctor Schedule & Shift Slot UI
+   ================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 35px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+/* Main title */
+h1 {
+    color: #174f8a;
+    margin-bottom: 30px;
+    font-size: 34px;
+}
+
+/* Form container */
+form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 650px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
+}
+
+/* Labels */
+label {
+    display: inline-block;
+    width: 170px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Form fields */
+input,
+select {
+    width: 250px;
+    padding: 9px;
+    border: 1px solid #b8c2cc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Focus effect */
+input:focus,
+select:focus {
+    outline: none;
+    border: 2px solid #174f8a;
+}
+
+/* Validation messages */
+form span {
+    color: #c62828;
+    font-size: 13px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+/* Add / Update button */
+button {
+    background: #174f8a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #123d6b;
+}
+
+/* Horizontal separator */
+hr {
+    border: 0;
+    border-top: 1px solid #d6dce3;
+    margin: 35px 0;
+}
+
+/* Schedule list title */
+h2 {
+    color: #243b53;
+    margin-bottom: 18px;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+th {
+    background: #174f8a;
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+
+td {
+    padding: 11px;
+    border-bottom: 1px solid #dce3ea;
+    text-align: center;
+}
+
+tr:hover {
+    background: #f1f5f9;
+}
+
+/* Action links */
+td a {
+    text-decoration: none;
+    margin: 0 4px;
+    font-weight: bold;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+/* Cancel edit link */
+form a {
+    margin-left: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #174f8a;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+
+    body {
+        padding: 15px;
+    }
+
+    form {
+        width: 100%;
+    }
+
+    label {
+        width: 100%;
+    }
+
+    input,
+    select {
+        width: 100%;
+    }
+
+    table {
+        font-size: 12px;
+    }
+}
