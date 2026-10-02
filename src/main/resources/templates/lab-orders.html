@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Laboratory & Diagnostic Management</title>
+    <title>MediBook ERP - Clinical Laboratory & Diagnostics</title>
     <!-- Fonts & Bootstrap 5 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +16,7 @@
             font-family: 'Inter', -apple-system, sans-serif;
             color: #1e293b;
             padding: 1.5rem 2rem;
+            margin: 0;
         }
         .surface-card {
             background: #ffffff;
@@ -81,7 +82,7 @@
 </head>
 <body>
 
-<!-- Header Bar -->
+<!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-1 text-dark">Clinical Diagnostic & Laboratory Subsystem</h4>
@@ -97,7 +98,7 @@
     </div>
 </div>
 
-<!-- Alert Banners -->
+<!-- Alert Messages -->
 <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show surface-card border-danger border-opacity-25" role="alert">
     <i class="fas fa-circle-exclamation me-2"></i>
     <span th:text="${errorMessage}">Validation Error occurred</span>
@@ -110,7 +111,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
-<!-- Metrics Cards -->
+<!-- Diagnostic Metrics -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="surface-card stat-card mb-0">
@@ -210,7 +211,7 @@
     </form>
 </div>
 
-<!-- Worklist Table -->
+<!-- Active Orders Worklist -->
 <div class="surface-card">
     <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
         <h6 class="fw-bold mb-0 text-dark">Active Diagnostic Worklist</h6>
