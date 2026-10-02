@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class DoctorScheduleController {
@@ -49,6 +52,42 @@ public class DoctorScheduleController {
 
 
     // =========================================
+    // COMMON PAGE DATA
+    // =========================================
+
+    private void addCommonPageData(Model model) {
+
+        List<Doctor> doctors = doctorRepository.findAll();
+
+        model.addAttribute(
+                "schedules",
+                doctorScheduleRepository.findAll()
+        );
+
+        // Used by Assign Doctor dropdown
+        model.addAttribute(
+                "doctors",
+                doctors
+        );
+
+        // Used to display Doctor Name + Specialization
+        Map<Integer, Doctor> doctorMap =
+                doctors.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        Doctor::getDoctorId,
+                                        doctor -> doctor
+                                )
+                        );
+
+        model.addAttribute(
+                "doctorMap",
+                doctorMap
+        );
+    }
+
+
+    // =========================================
     // READ
     // =========================================
 
@@ -60,15 +99,7 @@ public class DoctorScheduleController {
                 new DoctorSchedule()
         );
 
-        model.addAttribute(
-                "schedules",
-                doctorScheduleRepository.findAll()
-        );
-
-        model.addAttribute(
-                "doctors",
-                doctorRepository.findAll()
-        );
+        addCommonPageData(model);
 
         return "doctor-schedule";
     }
@@ -199,15 +230,7 @@ public class DoctorScheduleController {
 
         if (bindingResult.hasErrors()) {
 
-            model.addAttribute(
-                    "schedules",
-                    doctorScheduleRepository.findAll()
-            );
-
-            model.addAttribute(
-                    "doctors",
-                    doctorRepository.findAll()
-            );
+            addCommonPageData(model);
 
             return "doctor-schedule";
         }
@@ -240,15 +263,7 @@ public class DoctorScheduleController {
                 doctorSchedule
         );
 
-        model.addAttribute(
-                "schedules",
-                doctorScheduleRepository.findAll()
-        );
-
-        model.addAttribute(
-                "doctors",
-                doctorRepository.findAll()
-        );
+        addCommonPageData(model);
 
         return "doctor-schedule";
     }
