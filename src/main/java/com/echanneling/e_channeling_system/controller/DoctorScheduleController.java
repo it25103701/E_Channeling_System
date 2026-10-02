@@ -4,6 +4,7 @@ import com.echanneling.e_channeling_system.dao.DoctorScheduleRepository;
 import com.echanneling.e_channeling_system.model.DoctorSchedule;
 import com.echanneling.e_channeling_system.observer.DoctorScheduleNotifier;
 import com.echanneling.e_channeling_system.observer.PatientNotificationObserver;
+import com.echanneling.e_channeling_system.service.DoctorReplacementService;
 
 import jakarta.validation.Valid;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -19,13 +21,19 @@ public class DoctorScheduleController {
 
     private final DoctorScheduleRepository doctorScheduleRepository;
 
+    private final DoctorReplacementService doctorReplacementService;
+
     // Observer Pattern - Concrete Subject
     private final DoctorScheduleNotifier doctorScheduleNotifier;
 
+
     public DoctorScheduleController(
-            DoctorScheduleRepository doctorScheduleRepository) {
+            DoctorScheduleRepository doctorScheduleRepository,
+            DoctorReplacementService doctorReplacementService) {
 
         this.doctorScheduleRepository = doctorScheduleRepository;
+
+        this.doctorReplacementService = doctorReplacementService;
 
         // Create Concrete Subject
         this.doctorScheduleNotifier = new DoctorScheduleNotifier();
@@ -36,9 +44,10 @@ public class DoctorScheduleController {
         );
     }
 
-    // =========================
+
+    // =========================================
     // READ
-    // =========================
+    // =========================================
 
     @GetMapping("/doctor-schedule")
     public String showDoctorSchedulePage(Model model) {
@@ -56,9 +65,10 @@ public class DoctorScheduleController {
         return "doctor-schedule";
     }
 
-    // =========================
+
+    // =========================================
     // CREATE / UPDATE
-    // =========================
+    // =========================================
 
     @PostMapping("/doctor-schedule/save")
     public String saveDoctorSchedule(
@@ -66,9 +76,10 @@ public class DoctorScheduleController {
             BindingResult bindingResult,
             Model model) {
 
-        // =========================
+
+        // =====================================
         // VALIDATION 1 - PAST DATE
-        // =========================
+        // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
                 doctorSchedule.getConsultationDate()
@@ -81,9 +92,10 @@ public class DoctorScheduleController {
             );
         }
 
-        // =========================
-        // VALIDATION 2 - TIME
-        // =========================
+
+        // =====================================
+        // VALIDATION 2 - START / END TIME
+        // =====================================
 
         if (doctorSchedule.getStartTime() != null &&
                 doctorSchedule.getEndTime() != null &&
@@ -97,25 +109,28 @@ public class DoctorScheduleController {
             );
         }
 
-        // =========================
-        // VALIDATION 3 - OVERLAP
-        // =========================
+
+        // =====================================
+        // VALIDATION 3 - OVERLAPPING SCHEDULE
+        // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
                 doctorSchedule.getStartTime() != null &&
                 doctorSchedule.getEndTime() != null &&
                 doctorSchedule.getStartTime()
                         .isBefore(doctorSchedule.getEndTime()) &&
-                !"Cancelled".equalsIgnoreCase(doctorSchedule.getStatus())) {
+                !"Cancelled".equalsIgnoreCase(
+                        doctorSchedule.getStatus())) {
 
             long overlappingSchedules =
-                    doctorScheduleRepository.countOverlappingSchedules(
-                            doctorSchedule.getDoctorId(),
-                            doctorSchedule.getConsultationDate(),
-                            doctorSchedule.getStartTime(),
-                            doctorSchedule.getEndTime(),
-                            doctorSchedule.getScheduleId()
-                    );
+                    doctorScheduleRepository
+                            .countOverlappingSchedules(
+                                    doctorSchedule.getDoctorId(),
+                                    doctorSchedule.getConsultationDate(),
+                                    doctorSchedule.getStartTime(),
+                                    doctorSchedule.getEndTime(),
+                                    doctorSchedule.getScheduleId()
+                            );
 
             if (overlappingSchedules > 0) {
 
@@ -127,9 +142,10 @@ public class DoctorScheduleController {
             }
         }
 
-        // =========================
+
+        // =====================================
         // CHECK VALIDATION ERRORS
-        // =========================
+        // =====================================
 
         if (bindingResult.hasErrors()) {
 
@@ -141,14 +157,18 @@ public class DoctorScheduleController {
             return "doctor-schedule";
         }
 
-        doctorScheduleRepository.save(doctorSchedule);
+
+        doctorScheduleRepository.save(
+                doctorSchedule
+        );
 
         return "redirect:/doctor-schedule";
     }
 
-    // =========================
+
+    // =========================================
     // EDIT
-    // =========================
+    // =========================================
 
     @GetMapping("/doctor-schedule/edit/{id}")
     public String editDoctorSchedule(
@@ -173,9 +193,10 @@ public class DoctorScheduleController {
         return "doctor-schedule";
     }
 
-    // =========================
+
+    // =========================================
     // CANCEL + OBSERVER PATTERN
-    // =========================
+    // =========================================
 
     @GetMapping("/doctor-schedule/cancel/{id}")
     public String cancelDoctorSchedule(
@@ -188,9 +209,13 @@ public class DoctorScheduleController {
 
         if (doctorSchedule != null) {
 
-            doctorSchedule.setStatus("Cancelled");
+            doctorSchedule.setStatus(
+                    "Cancelled"
+            );
 
-            doctorScheduleRepository.save(doctorSchedule);
+            doctorScheduleRepository.save(
+                    doctorSchedule
+            );
 
             String message =
                     "Schedule ID " +
@@ -199,21 +224,57 @@ public class DoctorScheduleController {
                             doctorSchedule.getDoctorId() +
                             " has been cancelled.";
 
-            doctorScheduleNotifier.notifyObservers(message);
+            doctorScheduleNotifier
+                    .notifyObservers(message);
         }
 
         return "redirect:/doctor-schedule";
     }
 
-    // =========================
+
+    // =========================================
+    // EMERGENCY DOCTOR REASSIGNMENT
+    // =========================================
+
+    @GetMapping("/doctor-schedule/reassign/{id}")
+    public String reassignDoctor(
+            @PathVariable int id,
+            RedirectAttributes redirectAttributes) {
+
+        // Find replacement doctor
+        String result =
+                doctorReplacementService
+                        .reassignDoctor(id);
+
+        // Show result on next page
+        redirectAttributes.addFlashAttribute(
+                "reassignmentMessage",
+                result
+        );
+
+        // Notify patients if reassignment succeeded
+        if (result.contains("reassigned from Doctor ID")) {
+
+            doctorScheduleNotifier
+                    .notifyObservers(
+                            "Doctor reassignment: " + result
+                    );
+        }
+
+        return "redirect:/doctor-schedule";
+    }
+
+
+    // =========================================
     // DELETE
-    // =========================
+    // =========================================
 
     @GetMapping("/doctor-schedule/delete/{id}")
     public String deleteDoctorSchedule(
             @PathVariable int id) {
 
-        doctorScheduleRepository.deleteById(id);
+        doctorScheduleRepository
+                .deleteById(id);
 
         return "redirect:/doctor-schedule";
     }
