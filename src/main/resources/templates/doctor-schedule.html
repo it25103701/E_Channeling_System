@@ -64,7 +64,7 @@
             margin-bottom: 14px;
             padding: 7px 14px;
             border-radius: 20px;
-            background-color: rgba(255,255,255,0.18);
+            background-color: rgba(255, 255, 255, 0.18);
             font-size: 13px;
             font-weight: bold;
         }
@@ -167,7 +167,6 @@
               method="post">
 
 
-            <!-- Schedule ID -->
             <input type="hidden"
                    th:field="*{scheduleId}">
 
@@ -194,12 +193,17 @@
 
 
                         <option th:each="doctor : ${doctors}"
+
                                 th:value="${doctor.doctorId}"
+
                                 th:text="${doctor.doctorName
                                          + ' - '
                                          + doctor.specialization
                                          + ' - '
-                                         + doctor.availabilityStatus}">
+                                         + doctor.availabilityStatus}"
+
+                                th:disabled="${doctor.availabilityStatus != 'Available'
+                                             and doctor.doctorId != doctorSchedule.doctorId}">
                         </option>
 
                     </select>
@@ -348,7 +352,6 @@
             <div class="form-actions">
 
 
-                <!-- Add -->
                 <button type="submit"
                         class="btn btn-primary"
                         th:if="${doctorSchedule.scheduleId == 0}">
@@ -358,7 +361,6 @@
                 </button>
 
 
-                <!-- Update -->
                 <button type="submit"
                         class="btn btn-primary"
                         th:if="${doctorSchedule.scheduleId != 0}">
@@ -368,7 +370,6 @@
                 </button>
 
 
-                <!-- Cancel Edit -->
                 <a class="btn btn-secondary"
                    th:if="${doctorSchedule.scheduleId != 0}"
                    th:href="@{/doctor-schedule}">
@@ -406,19 +407,12 @@
                 <tr>
 
                     <th>Schedule ID</th>
-
                     <th>Doctor ID</th>
-
                     <th>Consultation Date</th>
-
                     <th>Start Time</th>
-
                     <th>End Time</th>
-
                     <th>Slot Capacity</th>
-
                     <th>Status</th>
-
                     <th>Action</th>
 
                 </tr>
@@ -426,13 +420,8 @@
                 </thead>
 
 
-
                 <tbody>
 
-
-                <!-- ================================= -->
-                <!-- SCHEDULE ROW -->
-                <!-- ================================= -->
 
                 <tr th:each="schedule : ${schedules}">
 
@@ -481,16 +470,13 @@
 
 
 
-                    <!-- ================================= -->
-                    <!-- ACTION BUTTONS -->
-                    <!-- ================================= -->
+                    <!-- ACTIONS -->
 
                     <td>
 
                         <div class="action-buttons">
 
 
-                            <!-- Edit -->
                             <a class="btn btn-edit"
 
                                th:href="@{/doctor-schedule/edit/{id}
@@ -502,7 +488,6 @@
 
 
 
-                            <!-- Emergency Reassign -->
                             <a class="btn btn-cancel"
 
                                th:if="${schedule.status != 'Cancelled'}"
@@ -516,7 +501,6 @@
 
 
 
-                            <!-- Cancel -->
                             <a class="btn btn-cancel"
 
                                th:if="${schedule.status != 'Cancelled'}"
@@ -530,7 +514,6 @@
 
 
 
-                            <!-- Already Cancelled -->
                             <span class="btn btn-secondary"
 
                                   th:if="${schedule.status == 'Cancelled'}">
@@ -541,7 +524,6 @@
 
 
 
-                            <!-- Delete -->
                             <a class="btn btn-delete"
 
                                th:href="@{/doctor-schedule/delete/{id}
@@ -558,10 +540,6 @@
                 </tr>
 
 
-
-                <!-- ================================= -->
-                <!-- NO RECORDS -->
-                <!-- ================================= -->
 
                 <tr th:if="${#lists.isEmpty(schedules)}">
 
