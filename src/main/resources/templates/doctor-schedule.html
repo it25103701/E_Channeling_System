@@ -5,167 +5,354 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>Doctor Schedule &amp; Shift Slot Management</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <style>
-        .main-title {
-            color: #1a4f8b;
-        }
-    </style>
+    <title>Doctor Schedule & Shift Slot Management</title>
+
+    <!-- Connect CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/doctor-schedule.css}">
 </head>
 
 <body>
 
-<h1 class="main-title">
-    Doctor Schedule &amp; Shift Slot Management
-</h1>
+<div class="container">
 
-<form th:action="@{/doctor-schedule/save}"
-      th:object="${doctorSchedule}"
-      method="post">
+    <!-- ============================= -->
+    <!-- PAGE TITLE -->
+    <!-- ============================= -->
 
-    <input type="hidden"
-           th:field="*{scheduleId}">
+    <h1 class="page-title">
+        Doctor Schedule & Shift Slot Management
+    </h1>
 
-    <label>Doctor ID:</label>
-    <input type="number"
-           th:field="*{doctorId}">
 
-    <span th:if="${#fields.hasErrors('doctorId')}"
-          th:errors="*{doctorId}">
-    </span>
+    <!-- ============================= -->
+    <!-- ADD / UPDATE FORM -->
+    <!-- ============================= -->
 
-    <br><br>
+    <div class="card">
 
-    <label>Consultation Date:</label>
-    <input type="date"
-           th:field="*{consultationDate}">
+        <h2 th:text="${doctorSchedule.scheduleId == 0
+                     ? 'Add Doctor Schedule'
+                     : 'Update Doctor Schedule'}">
+        </h2>
 
-    <span th:if="${#fields.hasErrors('consultationDate')}"
-          th:errors="*{consultationDate}">
-    </span>
+        <form th:action="@{/doctor-schedule/save}"
+              th:object="${doctorSchedule}"
+              method="post">
 
-    <br><br>
+            <!-- Keep Schedule ID during update -->
+            <input type="hidden"
+                   th:field="*{scheduleId}">
 
-    <label>Start Time:</label>
-    <input type="time"
-           th:field="*{startTime}">
 
-    <span th:if="${#fields.hasErrors('startTime')}"
-          th:errors="*{startTime}">
-    </span>
+            <div class="form-grid">
 
-    <br><br>
+                <!-- Doctor ID -->
+                <div class="form-group">
 
-    <label>End Time:</label>
-    <input type="time"
-           th:field="*{endTime}">
+                    <label for="doctorId">
+                        Doctor ID
+                    </label>
 
-    <span th:if="${#fields.hasErrors('endTime')}"
-          th:errors="*{endTime}">
-    </span>
+                    <input id="doctorId"
+                           type="number"
+                           th:field="*{doctorId}"
+                           min="1"
+                           placeholder="Enter Doctor ID">
 
-    <br><br>
+                    <span class="error-message"
+                          th:if="${#fields.hasErrors('doctorId')}"
+                          th:errors="*{doctorId}">
+                    </span>
 
-    <label>Slot Capacity:</label>
-    <input type="number"
-           th:field="*{slotCapacity}">
+                </div>
 
-    <span th:if="${#fields.hasErrors('slotCapacity')}"
-          th:errors="*{slotCapacity}">
-    </span>
 
-    <br><br>
+                <!-- Consultation Date -->
+                <div class="form-group">
 
-    <label>Status:</label>
-    <select th:field="*{status}">
-        <option value="Available">Available</option>
-        <option value="Blocked">Blocked</option>
-        <option value="Cancelled">Cancelled</option>
-    </select>
+                    <label for="consultationDate">
+                        Consultation Date
+                    </label>
 
-    <br><br>
+                    <input id="consultationDate"
+                           type="date"
+                           th:field="*{consultationDate}">
 
-    <button type="submit"
-            th:if="${doctorSchedule.scheduleId == 0}">
-        Add Schedule
-    </button>
+                    <span class="error-message"
+                          th:if="${#fields.hasErrors('consultationDate')}"
+                          th:errors="*{consultationDate}">
+                    </span>
 
-    <button type="submit"
-            th:if="${doctorSchedule.scheduleId != 0}">
-        Update Schedule
-    </button>
+                </div>
 
-    <a th:if="${doctorSchedule.scheduleId != 0}"
-       th:href="@{/doctor-schedule}">
-        Cancel Edit
-    </a>
 
-</form>
+                <!-- Start Time -->
+                <div class="form-group">
 
-<br>
+                    <label for="startTime">
+                        Start Time
+                    </label>
 
-<hr>
+                    <input id="startTime"
+                           type="time"
+                           th:field="*{startTime}">
 
-<h2>Current Doctor Schedules</h2>
+                    <span class="error-message"
+                          th:if="${#fields.hasErrors('startTime')}"
+                          th:errors="*{startTime}">
+                    </span>
 
-<table border="1">
+                </div>
 
-    <thead>
-    <tr>
-        <th>Schedule ID</th>
-        <th>Doctor ID</th>
-        <th>Consultation Date</th>
-        <th>Start Time</th>
-        <th>End Time</th>
-        <th>Slot Capacity</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
 
-    <tbody>
+                <!-- End Time -->
+                <div class="form-group">
 
-    <tr th:each="schedule : ${schedules}">
+                    <label for="endTime">
+                        End Time
+                    </label>
 
-        <td th:text="${schedule.scheduleId}"></td>
-        <td th:text="${schedule.doctorId}"></td>
-        <td th:text="${schedule.consultationDate}"></td>
-        <td th:text="${schedule.startTime}"></td>
-        <td th:text="${schedule.endTime}"></td>
-        <td th:text="${schedule.slotCapacity}"></td>
-        <td th:text="${schedule.status}"></td>
+                    <input id="endTime"
+                           type="time"
+                           th:field="*{endTime}">
 
-        <td>
+                    <span class="error-message"
+                          th:if="${#fields.hasErrors('endTime')}"
+                          th:errors="*{endTime}">
+                    </span>
 
-            <a th:href="@{/doctor-schedule/edit/{id}(id=${schedule.scheduleId})}">
-                Edit
-            </a>
+                </div>
 
-            |
 
-            <a th:if="${schedule.status != 'Cancelled'}"
-               th:href="@{/doctor-schedule/cancel/{id}(id=${schedule.scheduleId})}">
-                Cancel
-            </a>
+                <!-- Slot Capacity -->
+                <div class="form-group">
 
-            <span th:if="${schedule.status == 'Cancelled'}">
-                Cancelled
-            </span>
+                    <label for="slotCapacity">
+                        Slot Capacity
+                    </label>
 
-            |
+                    <input id="slotCapacity"
+                           type="number"
+                           th:field="*{slotCapacity}"
+                           min="1"
+                           placeholder="Enter Slot Capacity">
 
-            <a th:href="@{/doctor-schedule/delete/{id}(id=${schedule.scheduleId})}">
-                Delete
-            </a>
+                    <span class="error-message"
+                          th:if="${#fields.hasErrors('slotCapacity')}"
+                          th:errors="*{slotCapacity}">
+                    </span>
 
-        </td>
+                </div>
 
-    </tr>
 
-    </tbody>
+                <!-- Status -->
+                <div class="form-group">
 
-</table>
+                    <label for="status">
+                        Status
+                    </label>
+
+                    <select id="status"
+                            th:field="*{status}">
+
+                        <option value="Available">
+                            Available
+                        </option>
+
+                        <option value="Blocked">
+                            Blocked
+                        </option>
+
+                        <option value="Cancelled">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Form Buttons -->
+            <div class="form-actions">
+
+                <!-- Add -->
+                <button type="submit"
+                        class="btn btn-primary"
+                        th:if="${doctorSchedule.scheduleId == 0}">
+                    Add Schedule
+                </button>
+
+
+                <!-- Update -->
+                <button type="submit"
+                        class="btn btn-primary"
+                        th:if="${doctorSchedule.scheduleId != 0}">
+                    Update Schedule
+                </button>
+
+
+                <!-- Cancel Edit -->
+                <a class="btn btn-secondary"
+                   th:if="${doctorSchedule.scheduleId != 0}"
+                   th:href="@{/doctor-schedule}">
+                    Cancel Edit
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- CURRENT SCHEDULES -->
+    <!-- ============================= -->
+
+    <div class="card">
+
+        <h2>
+            Current Doctor Schedules
+        </h2>
+
+        <div class="table-responsive">
+
+            <table class="schedule-table">
+
+                <thead>
+
+                <tr>
+
+                    <th>Schedule ID</th>
+
+                    <th>Doctor ID</th>
+
+                    <th>Consultation Date</th>
+
+                    <th>Start Time</th>
+
+                    <th>End Time</th>
+
+                    <th>Slot Capacity</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <!-- Schedule Rows -->
+                <tr th:each="schedule : ${schedules}">
+
+                    <td th:text="${schedule.scheduleId}">
+                    </td>
+
+                    <td th:text="${schedule.doctorId}">
+                    </td>
+
+                    <td th:text="${schedule.consultationDate}">
+                    </td>
+
+                    <td th:text="${schedule.startTime}">
+                    </td>
+
+                    <td th:text="${schedule.endTime}">
+                    </td>
+
+                    <td th:text="${schedule.slotCapacity}">
+                    </td>
+
+
+                    <!-- Status -->
+                    <td>
+
+                        <span class="status"
+                              th:classappend="${schedule.status == 'Available'}
+                                      ? ' status-available'
+                                      : (${schedule.status == 'Blocked'}
+                                      ? ' status-blocked'
+                                      : ' status-cancelled')"
+                              th:text="${schedule.status}">
+                        </span>
+
+                    </td>
+
+
+                    <!-- Actions -->
+                    <td>
+
+                        <div class="action-buttons">
+
+                            <!-- Edit -->
+                            <a class="btn btn-edit"
+                               th:href="@{/doctor-schedule/edit/{id}
+                               (id=${schedule.scheduleId})}">
+                                Edit
+                            </a>
+
+
+                            <!-- Cancel -->
+                            <a class="btn btn-cancel"
+                               th:if="${schedule.status != 'Cancelled'}"
+                               th:href="@{/doctor-schedule/cancel/{id}
+                               (id=${schedule.scheduleId})}">
+                                Cancel
+                            </a>
+
+
+                            <!-- Already Cancelled -->
+                            <span class="btn btn-secondary"
+                                  th:if="${schedule.status == 'Cancelled'}">
+                                Cancelled
+                            </span>
+
+
+                            <!-- Delete -->
+                            <a class="btn btn-delete"
+                               th:href="@{/doctor-schedule/delete/{id}
+                               (id=${schedule.scheduleId})}">
+                                Delete
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- No Records -->
+                <tr th:if="${#lists.isEmpty(schedules)}">
+
+                    <td colspan="8"
+                        class="empty-message">
+
+                        No doctor schedules available.
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
