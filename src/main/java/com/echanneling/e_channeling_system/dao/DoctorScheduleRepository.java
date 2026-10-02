@@ -13,6 +13,11 @@ import java.time.LocalTime;
 public interface DoctorScheduleRepository
         extends JpaRepository<DoctorSchedule, Integer> {
 
+
+    // =========================================
+    // CHECK DOCTOR SCHEDULE OVERLAP
+    // =========================================
+
     @Query("""
             SELECT COUNT(s)
             FROM DoctorSchedule s
@@ -25,6 +30,29 @@ public interface DoctorScheduleRepository
             """)
     long countOverlappingSchedules(
             @Param("doctorId") int doctorId,
+            @Param("consultationDate") LocalDate consultationDate,
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime,
+            @Param("scheduleId") int scheduleId
+    );
+
+
+    // =========================================
+    // CHECK ROOM SCHEDULE OVERLAP
+    // =========================================
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM DoctorSchedule s
+            WHERE LOWER(s.roomNo) = LOWER(:roomNo)
+            AND s.consultationDate = :consultationDate
+            AND s.status <> 'Cancelled'
+            AND s.startTime < :endTime
+            AND s.endTime > :startTime
+            AND (:scheduleId = 0 OR s.scheduleId <> :scheduleId)
+            """)
+    long countOverlappingRoomSchedules(
+            @Param("roomNo") String roomNo,
             @Param("consultationDate") LocalDate consultationDate,
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime,
