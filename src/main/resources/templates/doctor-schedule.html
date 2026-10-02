@@ -4,12 +4,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Doctor Schedule</title>
+
+    <title>Doctor Schedule &amp; Shift Slot Management</title>
+
+    <style>
+        .main-title {
+            color: #1a4f8b;
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>Doctor Schedule Management</h1>
+<h1 class="main-title">
+    Doctor Schedule &amp; Shift Slot Management
+</h1>
 
 <form th:action="@{/doctor-schedule/save}"
       th:object="${doctorSchedule}"
