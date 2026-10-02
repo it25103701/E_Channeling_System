@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Reusable Shared Sidebar Fragment -->
+<aside th:fragment="app-sidebar(activeTab)" class="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-heart-pulse text-primary fs-5"></i>
+        <span>MediBook <span class="badge bg-secondary ms-1 fw-normal" style="font-size: 0.65rem;">v2.4</span></span>
+    </div>
+
+    <div class="sidebar-heading">Clinical Modules</div>
+
+    <!-- Lab Orders Link (Your Module: UC-06) -->
+    <a th:href="@{/lab-orders}" class="sidebar-link" th:classappend="${activeTab == 'lab-orders'} ? ' active' : ''">
+        <i class="fas fa-flask-vial"></i>
+        <div>
+            <div>Lab Orders</div>
+            <small th:class="${activeTab == 'lab-orders'} ? 'text-white-50' : 'text-muted'" style="font-size: 0.7rem;">UC-06 Diagnostics</small>
+        </div>
+    </a>
+
+    <!-- Appointments Link (UC-01) -->
+    <a href="#" class="sidebar-link" th:classappend="${activeTab == 'appointments'} ? ' active' : ''">
+        <i class="fas fa-calendar-check text-info"></i>
+        <div>
+            <div>Appointments</div>
+            <small class="text-muted" style="font-size: 0.7rem;">UC-01 Scheduling</small>
+        </div>
+    </a>
+
+    <!-- Doctor Schedules Link (UC-03) -->
+    <a href="/doctor-schedules" class="sidebar-link" th:classappend="${activeTab == 'schedules'} ? ' active' : ''">
+        <i class="fas fa-user-doctor text-warning"></i>
+        <div>
+            <div>Doctor Schedules</div>
+            <small class="text-muted" style="font-size: 0.7rem;">UC-03 Roster</small>
+        </div>
+    </a>
+
+    <!-- Notifications Link (UC-05) -->
+    <a href="/notifications" class="sidebar-link" th:classappend="${activeTab == 'notifications'} ? ' active' : ''">
+        <i class="fas fa-bell text-danger"></i>
+        <div>
+            <div>Notifications</div>
+            <small class="text-muted" style="font-size: 0.7rem;">UC-05 Alerts</small>
+        </div>
+    </a>
+
+    <div class="sidebar-heading mt-3">Persistence & Storage</div>
+    <a href="/h2-console" target="_blank" class="sidebar-link">
+        <i class="fas fa-database text-light"></i>
+        <div>
+            <div>H2 DB Console</div>
+            <small class="text-muted" style="font-size: 0.7rem;">jdbc:h2:mem:medibookdb</small>
+        </div>
+    </a>
+
+    <div class="mt-auto sidebar-footer">
+        <div>Enterprise Hospital ERP</div>
+        <div>Spring Boot &bull; JPA &bull; Thymeleaf</div>
+    </div>
+</aside>
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBook ERP - Clinical Laboratory & Diagnostics</title>
+    <!-- Fonts & Bootstrap 5 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: #1e293b;
+            padding: 1.5rem 2rem;
+            margin: 0;
+        }
+        .surface-card {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.35rem;
+        }
+        .form-control, .form-select {
+            font-size: 0.88rem;
+            border-radius: 0.45rem;
+            border: 1px solid #cbd5e1;
+            padding: 0.55rem 0.75rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+        .badge-soft-stat {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            border-radius: 0.35rem;
+            padding: 0.3rem 0.55rem;
+            font-size: 0.75rem;
+        }
+        .badge-soft-urgent {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+            font-weight: 600;
+            border-radius: 0.35rem;
+            padding: 0.3rem 0.55rem;
+            font-size: 0.75rem;
+        }
+        .badge-soft-routine {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            border-radius: 0.35rem;
+            padding: 0.3rem 0.55rem;
+            font-size: 0.75rem;
+        }
+        .table > :not(caption) > * > * {
+            padding: 0.85rem 1rem;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1 text-dark">Clinical Diagnostic & Laboratory Subsystem</h4>
+        <div class="text-muted small">Use Case 06 &bull; Enterprise Test Requisitioning & Clinical Urgency Management</div>
+    </div>
+    <div class="d-flex gap-2">
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                <i class="fas fa-circle text-success me-1" style="font-size: 0.55rem;"></i> System Online
+            </span>
+        <span class="badge bg-primary text-white px-3 py-2">
+                <i class="fas fa-user-md me-1"></i> Lab Specialist
+            </span>
+    </div>
+</div>
+
+<!-- Alert Messages -->
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show surface-card border-danger border-opacity-25" role="alert">
+    <i class="fas fa-circle-exclamation me-2"></i>
+    <span th:text="${errorMessage}">Validation Error occurred</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show surface-card border-success border-opacity-25" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${successMessage}">Operation completed successfully</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<!-- Diagnostic Metrics -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="surface-card stat-card mb-0">
+            <div>
+                <div class="text-muted small fw-medium">Active Requisitions</div>
+                <h3 class="fw-bold mb-0 mt-1" th:text="${#lists.size(labOrders)}">0</h3>
+            </div>
+            <div class="rounded-3 bg-primary bg-opacity-10 text-primary p-3">
+                <i class="fas fa-vial fs-4"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="surface-card stat-card mb-0">
+            <div>
+                <div class="text-muted small fw-medium">Consultation Refs</div>
+                <h3 class="fw-bold mb-0 mt-1" th:text="${appointmentCount}">0</h3>
+            </div>
+            <div class="rounded-3 bg-info bg-opacity-10 text-info p-3">
+                <i class="fas fa-notes-medical fs-4"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="surface-card stat-card mb-0">
+            <div>
+                <div class="text-muted small fw-medium">Design Architecture</div>
+                <h6 class="fw-bold text-dark mb-0 mt-2">Factory + Strategy</h6>
+            </div>
+            <div class="rounded-3 bg-success bg-opacity-10 text-success p-3">
+                <i class="fas fa-diagram-project fs-4"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diagnostic Requisition Form -->
+<div class="surface-card p-4">
+    <h6 class="fw-bold mb-3 text-dark">
+        <i class="fas fa-plus-circle text-primary me-2"></i>Issue Diagnostic Test Requisition
+    </h6>
+    <form th:action="@{/lab-orders/create}" method="post" id="requisitionForm" class="row g-3 needs-validation" novalidate>
+
+        <!-- 1. Diagnostic Test Category -->
+        <div class="col-md-4">
+            <label class="form-label">Diagnostic Test Category <span class="text-danger">*</span></label>
+            <select name="testCategory" id="testCategorySelect" class="form-select" required>
+                <option value="" disabled selected>Select category...</option>
+                <option value="Full Blood Count (FBC)" data-dept="Pathology / Hematology">Full Blood Count (FBC)</option>
+                <option value="Lipid Profile" data-dept="Clinical Biochemistry">Lipid Profile</option>
+                <option value="12-Lead ECG" data-dept="Cardiology Diagnostics">12-Lead ECG</option>
+                <option value="Chest X-Ray" data-dept="Radiology & Imaging">Chest X-Ray</option>
+                <option value="Ultrasound Abdomen" data-dept="Sonography Unit">Ultrasound Abdomen</option>
+            </select>
+            <div class="invalid-feedback">Diagnostic category selection is required.</div>
+        </div>
+
+        <!-- 2. Clinical Department -->
+        <div class="col-md-4">
+            <label class="form-label">Clinical Department <span class="text-danger">*</span></label>
+            <input type="text" name="department" id="departmentInput" class="form-control" placeholder="Enter department name" required>
+            <div class="invalid-feedback">Department designation is required.</div>
+        </div>
+
+        <!-- 3. Urgency Priority -->
+        <div class="col-md-4">
+            <label class="form-label">Clinical Urgency <span class="text-danger">*</span></label>
+            <select name="urgencyLevel" id="urgencySelect" class="form-select" required>
+                <option value="" disabled selected>Select urgency level...</option>
+                <option value="ROUTINE">ROUTINE (Standard 48h)</option>
+                <option value="URGENT">URGENT (Expedited 24h)</option>
+                <option value="STAT">STAT (Emergency 24h immediate)</option>
+            </select>
+            <div class="invalid-feedback">Urgency priority must be selected.</div>
+        </div>
+
+        <!-- 4. Requisition Date -->
+        <div class="col-md-4">
+            <label class="form-label">Requisition Date <span class="text-danger">*</span></label>
+            <input type="date" name="orderDate" id="orderDateInput" class="form-control" required>
+            <div class="invalid-feedback">Valid order date required (cannot be in the past).</div>
+        </div>
+
+        <!-- 5. Expected Completion Date -->
+        <div class="col-md-4">
+            <label class="form-label">Expected Completion Date <span class="text-danger">*</span></label>
+            <input type="date" name="expectedDate" id="expectedDateInput" class="form-control" required>
+            <div class="invalid-feedback">Expected result date is required and cannot precede order date.</div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                <i class="fas fa-file-medical me-1"></i> Place Diagnostic Order
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Active Orders Worklist -->
+<div class="surface-card">
+    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0 text-dark">Active Diagnostic Worklist</h6>
+        <span class="badge bg-light text-secondary border">Real-time Orders</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+                <th class="ps-3">ID</th>
+                <th>Diagnostic Test</th>
+                <th>Department</th>
+                <th>Order Date</th>
+                <th>Target Date</th>
+                <th>Urgency</th>
+                <th>Status</th>
+                <th class="text-end pe-3">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${labOrders}">
+                <td class="ps-3 fw-bold text-secondary" th:text="'#LAB-' + ${order.id}">#LAB-1</td>
+                <td>
+                    <div class="fw-semibold text-dark" th:text="${order.testCategory}">Test Name</div>
+                    <small class="text-muted" th:text="'Ref #' + ${order.appointmentRefId}">Ref #101</small>
+                </td>
+                <td>
+                    <span class="badge bg-light text-dark border" th:text="${order.department}">Pathology</span>
+                </td>
+                <td class="text-muted" th:text="${order.orderDate}">2026-10-01</td>
+                <td class="fw-semibold text-primary" th:text="${order.expectedDate}">2026-10-03</td>
+                <td>
+                    <span th:if="${order.urgencyLevel == 'STAT'}" class="badge-soft-stat">STAT</span>
+                    <span th:if="${order.urgencyLevel == 'URGENT'}" class="badge-soft-urgent">URGENT</span>
+                    <span th:if="${order.urgencyLevel == 'ROUTINE'}" class="badge-soft-routine">ROUTINE</span>
+                </td>
+                <td>
+                    <span th:if="${order.status == 'PENDING'}" class="badge bg-warning-subtle text-warning border border-warning-subtle">PENDING</span>
+                    <span th:if="${order.status == 'SAMPLE_COLLECTED'}" class="badge bg-info-subtle text-info border border-info-subtle">COLLECTED</span>
+                    <span th:if="${order.status == 'COMPLETED'}" class="badge bg-success-subtle text-success border border-success-subtle">COMPLETED</span>
+                </td>
+                <td class="text-end pe-3">
+                    <div class="d-inline-flex gap-2 align-items-center">
+                        <form th:if="${order.status != 'COMPLETED'}" th:action="@{'/lab-orders/advance-status/' + ${order.id}}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" title="Advance Lifecycle Status">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                        </form>
+                        <span th:if="${order.status == 'COMPLETED'}" class="badge bg-light text-muted border py-1 px-2" title="Order Finalized">
+                                    <i class="fas fa-check-double text-success"></i> Done
+                                </span>
+                        <form th:action="@{'/lab-orders/delete/' + ${order.id}}" method="post" class="d-inline" onsubmit="return confirm('Revoke this diagnostic requisition?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Revoke Order">
+                                <i class="fas fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(labOrders)}">
+                <td colspan="8" class="text-center py-5 text-muted">
+                    <i class="fas fa-inbox fa-3x mb-2 text-secondary opacity-50 d-block"></i>
+                    No diagnostic orders found. Submit an order above to begin.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS & Form Validations -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('requisitionForm');
+        const testCategorySelect = document.getElementById('testCategorySelect');
+        const departmentInput = document.getElementById('departmentInput');
+        const urgencySelect = document.getElementById('urgencySelect');
+        const orderDateInput = document.getElementById('orderDateInput');
+        const expectedDateInput = document.getElementById('expectedDateInput');
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        if (orderDateInput) {
+            orderDateInput.min = todayStr;
+        }
+
+        if (testCategorySelect && departmentInput) {
+            testCategorySelect.addEventListener('change', function () {
+                const selectedOption = testCategorySelect.options[testCategorySelect.selectedIndex];
+                const defaultDept = selectedOption.getAttribute('data-dept');
+                if (defaultDept && !departmentInput.value) {
+                    departmentInput.value = defaultDept;
+                }
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', function (event) {
+                let isValid = true;
+
+                if (!testCategorySelect.value) {
+                    testCategorySelect.setCustomValidity("Diagnostic category selection is required.");
+                    isValid = false;
+                } else {
+                    testCategorySelect.setCustomValidity("");
+                }
+
+                if (!departmentInput.value || departmentInput.value.trim() === "") {
+                    departmentInput.setCustomValidity("Department is required.");
+                    isValid = false;
+                } else {
+                    departmentInput.setCustomValidity("");
+                }
+
+                if (!urgencySelect.value) {
+                    urgencySelect.setCustomValidity("Urgency selection is required.");
+                    isValid = false;
+                } else {
+                    urgencySelect.setCustomValidity("");
+                }
+
+                if (!orderDateInput.value || orderDateInput.value < todayStr) {
+                    orderDateInput.setCustomValidity("Requisition date cannot be empty or in the past.");
+                    isValid = false;
+                } else {
+                    orderDateInput.setCustomValidity("");
+                }
+
+                if (!expectedDateInput.value) {
+                    expectedDateInput.setCustomValidity("Expected completion date is mandatory.");
+                    isValid = false;
+                } else if (orderDateInput.value && expectedDateInput.value < orderDateInput.value) {
+                    expectedDateInput.setCustomValidity("Expected date cannot precede order date.");
+                    isValid = false;
+                } else if (orderDateInput.value && urgencySelect.value === 'STAT') {
+                    const diffDays = (new Date(expectedDateInput.value) - new Date(orderDateInput.value)) / (1000 * 3600 * 24);
+                    if (diffDays > 1) {
+                        expectedDateInput.setCustomValidity("STAT orders require completion within 24 hours.");
+                        isValid = false;
+                    } else {
+                        expectedDateInput.setCustomValidity("");
+                    }
+                } else {
+                    expectedDateInput.setCustomValidity("");
+                }
+
+                if (!form.checkValidity() || !isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        }
+    });
+</script>
+</body>
+</html>

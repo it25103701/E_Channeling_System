@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBook - Central Healthcare Management Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-navy: #0f172a;
+            --sidebar-bg: #1e293b;
+            --accent-blue: #2563eb;
+            --border-color: #334155;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            background-color: var(--primary-navy);
+            height: 60px;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Sidebar Navigation */
+        .dashboard-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.25rem 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .nav-pills .nav-link {
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 0.92rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.35rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
+            text-align: left;
+        }
+
+        .nav-pills .nav-link i {
+            width: 24px;
+            font-size: 1.1rem;
+            margin-right: 0.75rem;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--accent-blue) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+        }
+
+        .section-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.75rem 1rem 0.4rem;
+        }
+
+        /* Workspace Content & Responsive Iframes */
+        .workspace-area {
+            flex-grow: 1;
+            background-color: #f8fafc;
+            position: relative;
+        }
+
+        .tab-content, .tab-pane {
+            height: 100%;
+            width: 100%;
+        }
+
+        .module-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP GLOBAL HEADER -->
+<header class="top-navbar d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center text-white">
+        <i class="fa-solid fa-notes-medical fs-4 text-primary me-2"></i>
+        <span class="fs-5 fw-bold tracking-wide">MediBook</span>
+        <span class="badge bg-secondary ms-3 text-uppercase" style="font-size: 0.7rem;">Hospital ERP v2.4</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <span class="text-light small"><i class="fa-solid fa-circle-nodes text-success me-1"></i> System Online</span>
+        <span class="badge bg-dark border border-secondary text-info px-3 py-2">
+                <i class="fa-solid fa-user-shield me-1"></i> Admin Portal
+            </span>
+    </div>
+</header>
+
+<!-- MAIN INTERFACE BODY -->
+<div class="dashboard-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div>
+            <div class="section-label">Core Clinical Operations</div>
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+
+                <!-- AKTHAR (UC-06) -->
+                <button class="nav-link active" id="tab-lab-orders" data-bs-toggle="pill" data-bs-target="#pane-lab-orders" type="button" role="tab">
+                    <i class="fa-solid fa-microscope text-info"></i>
+                    <div>
+                        <div>Lab Orders</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">UC-06 </small>
+                    </div>
+                </button>
+
+                <!-- DAMSANA (UC-01) -->
+                <button class="nav-link" id="tab-appointments" data-bs-toggle="pill" data-bs-target="#pane-appointments" type="button" role="tab">
+                    <i class="fa-solid fa-calendar-check text-primary"></i>
+                    <div>
+                        <div>Appointments</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">UC-01 </small>
+                    </div>
+                </button>
+
+                <!-- HAMDHAN (UC-03) -->
+                <button class="nav-link" id="tab-schedules" data-bs-toggle="pill" data-bs-target="#pane-schedules" type="button" role="tab">
+                    <i class="fa-solid fa-user-doctor text-warning"></i>
+                    <div>
+                        <div>Doctor Schedules</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">UC-03 </small>
+                    </div>
+                </button>
+
+                <!-- AMASHA (UC-05) -->
+                <button class="nav-link" id="tab-notifications" data-bs-toggle="pill" data-bs-target="#pane-notifications" type="button" role="tab">
+                    <i class="fa-solid fa-bullhorn text-danger"></i>
+                    <div>
+                        <div>Notifications</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">UC-05 </small>
+                    </div>
+                </button>
+
+                <div class="section-label mt-3">Persistence &amp; Storage</div>
+                <!-- H2 DATABASE CONSOLE -->
+                <button class="nav-link" id="tab-database" data-bs-toggle="pill" data-bs-target="#pane-database" type="button" role="tab">
+                    <i class="fa-solid fa-database text-light"></i>
+                    <div>
+                        <div>H2 DB Console</div>
+                        <small class="text-white-50" style="font-size: 0.75rem;">jdbc:h2:mem:medibookdb</small>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- SIDEBAR FOOTER -->
+        <div class="p-2 border-top border-secondary text-white-50 small">
+            <div><i class="fa-solid fa-code-branch me-1 text-primary"></i> Team: <strong>MLB-B4G1-07</strong></div>
+            <div class="mt-1" style="font-size: 0.75rem;">Spring Boot &bull; JPA &bull; H2</div>
+        </div>
+    </aside>
+
+    <!-- WORKSPACE (IFRAMES) -->
+    <main class="workspace-area">
+        <div class="tab-content" id="v-pills-tabContent">
+
+            <!-- PANE: LAB ORDERS  -->
+            <div class="tab-pane fade show active" id="pane-lab-orders" role="tabpanel">
+                <iframe class="module-iframe" src="/lab-orders" title="Laboratory & Diagnostic Orders"></iframe>
+            </div>
+
+            <!-- PANE: APPOINTMENTS  -->
+            <div class="tab-pane fade" id="pane-appointments" role="tabpanel">
+                <iframe class="module-iframe" src="/appointments.html" title="Patient Appointments"></iframe>
+            </div>
+
+            <!-- PANE: DOCTOR SCHEDULES  -->
+            <div class="tab-pane fade" id="pane-schedules" role="tabpanel">
+                <iframe class="module-iframe" src="/doctor-schedule" title="Doctor Scheduling"></iframe>
+            </div>
+
+            <!-- PANE: NOTIFICATIONS  -->
+            <div class="tab-pane fade" id="pane-notifications" role="tabpanel">
+                <iframe class="module-iframe" src="/notifications" title="Broadcast Notifications"></iframe>
+            </div>
+
+            <!-- PANE: H2 CONSOLE -->
+            <div class="tab-pane fade" id="pane-database" role="tabpanel">
+                <iframe class="module-iframe" src="/h2-console" title="In-Memory Database Console"></iframe>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
