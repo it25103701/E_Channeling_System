@@ -100,7 +100,7 @@
 
 
     <!-- ===================================== -->
-    <!-- PROFESSIONAL HERO SECTION -->
+    <!-- HERO SECTION -->
     <!-- ===================================== -->
 
     <section class="hero-section">
@@ -151,7 +151,7 @@
 
 
     <!-- ===================================== -->
-    <!-- ADD / UPDATE DOCTOR SCHEDULE -->
+    <!-- ADD / UPDATE SCHEDULE -->
     <!-- ===================================== -->
 
     <div class="card">
@@ -174,9 +174,7 @@
             <div class="form-grid">
 
 
-                <!-- ================================= -->
                 <!-- ASSIGN DOCTOR -->
-                <!-- ================================= -->
 
                 <div class="form-group">
 
@@ -218,9 +216,7 @@
 
 
 
-                <!-- ================================= -->
                 <!-- CONSULTATION DATE -->
-                <!-- ================================= -->
 
                 <div class="form-group">
 
@@ -241,9 +237,7 @@
 
 
 
-                <!-- ================================= -->
                 <!-- START TIME -->
-                <!-- ================================= -->
 
                 <div class="form-group">
 
@@ -264,9 +258,7 @@
 
 
 
-                <!-- ================================= -->
                 <!-- END TIME -->
-                <!-- ================================= -->
 
                 <div class="form-group">
 
@@ -287,9 +279,7 @@
 
 
 
-                <!-- ================================= -->
                 <!-- SLOT CAPACITY -->
-                <!-- ================================= -->
 
                 <div class="form-group">
 
@@ -312,9 +302,7 @@
 
 
 
-                <!-- ================================= -->
                 <!-- STATUS -->
-                <!-- ================================= -->
 
                 <div class="form-group">
 
@@ -345,37 +333,26 @@
 
 
 
-            <!-- ================================= -->
             <!-- FORM ACTIONS -->
-            <!-- ================================= -->
 
             <div class="form-actions">
-
 
                 <button type="submit"
                         class="btn btn-primary"
                         th:if="${doctorSchedule.scheduleId == 0}">
-
                     Add Schedule
-
                 </button>
-
 
                 <button type="submit"
                         class="btn btn-primary"
                         th:if="${doctorSchedule.scheduleId != 0}">
-
                     Update Schedule
-
                 </button>
-
 
                 <a class="btn btn-secondary"
                    th:if="${doctorSchedule.scheduleId != 0}"
                    th:href="@{/doctor-schedule}">
-
                     Cancel Edit
-
                 </a>
 
             </div>
@@ -387,7 +364,7 @@
 
 
     <!-- ===================================== -->
-    <!-- CURRENT DOCTOR SCHEDULES -->
+    <!-- CURRENT SCHEDULES -->
     <!-- ===================================== -->
 
     <div class="card">
@@ -407,12 +384,23 @@
                 <tr>
 
                     <th>Schedule ID</th>
+
                     <th>Doctor ID</th>
+
+                    <th>Doctor Name</th>
+
+                    <th>Specialization</th>
+
                     <th>Consultation Date</th>
+
                     <th>Start Time</th>
+
                     <th>End Time</th>
+
                     <th>Slot Capacity</th>
+
                     <th>Status</th>
+
                     <th>Action</th>
 
                 </tr>
@@ -426,26 +414,46 @@
                 <tr th:each="schedule : ${schedules}">
 
 
+                    <!-- Schedule ID -->
                     <td th:text="${schedule.scheduleId}">
                     </td>
 
 
+                    <!-- Doctor ID -->
                     <td th:text="${schedule.doctorId}">
                     </td>
 
 
+                    <!-- Doctor Name -->
+                    <td th:text="${doctorMap[schedule.doctorId] != null
+                                  ? doctorMap[schedule.doctorId].doctorName
+                                  : 'Unknown Doctor'}">
+                    </td>
+
+
+                    <!-- Specialization -->
+                    <td th:text="${doctorMap[schedule.doctorId] != null
+                                  ? doctorMap[schedule.doctorId].specialization
+                                  : 'Not Available'}">
+                    </td>
+
+
+                    <!-- Date -->
                     <td th:text="${schedule.consultationDate}">
                     </td>
 
 
+                    <!-- Start Time -->
                     <td th:text="${schedule.startTime}">
                     </td>
 
 
+                    <!-- End Time -->
                     <td th:text="${schedule.endTime}">
                     </td>
 
 
+                    <!-- Capacity -->
                     <td th:text="${schedule.slotCapacity}">
                     </td>
 
@@ -541,9 +549,11 @@
 
 
 
+                <!-- NO RECORDS -->
+
                 <tr th:if="${#lists.isEmpty(schedules)}">
 
-                    <td colspan="8"
+                    <td colspan="10"
                         class="empty-message">
 
                         No doctor schedules available.
