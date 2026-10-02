@@ -145,59 +145,10 @@
 <body>
 
 <div class="app-shell">
-    <!-- Single Sidebar Navigation (Clean Labels Without Personal Names) -->
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fas fa-heart-pulse text-primary fs-5"></i>
-            <span>MediBook <span class="badge bg-secondary ms-1 fw-normal" style="font-size: 0.65rem;">v2.4</span></span>
-        </div>
+    <!-- Clean Dynamic Fragment Injection -->
+    <div th:replace="~{fragments/sidebar :: app-sidebar('lab-orders')}"></div>
 
-        <div class="sidebar-heading">Clinical Modules</div>
-        <a th:href="@{/lab-orders}" class="sidebar-link active">
-            <i class="fas fa-flask-vial"></i>
-            <div>
-                <div>Lab Orders</div>
-                <small class="text-white-50" style="font-size: 0.7rem;">UC-06 Diagnostics</small>
-            </div>
-        </a>
-        <a href="#" class="sidebar-link">
-            <i class="fas fa-calendar-check text-info"></i>
-            <div>
-                <div>Appointments</div>
-                <small class="text-muted" style="font-size: 0.7rem;">UC-01 Scheduling</small>
-            </div>
-        </a>
-        <a href="/doctor-schedules" class="sidebar-link">
-            <i class="fas fa-user-doctor text-warning"></i>
-            <div>
-                <div>Doctor Schedules</div>
-                <small class="text-muted" style="font-size: 0.7rem;">UC-03 Roster</small>
-            </div>
-        </a>
-        <a href="/notifications" class="sidebar-link">
-            <i class="fas fa-bell text-danger"></i>
-            <div>
-                <div>Notifications</div>
-                <small class="text-muted" style="font-size: 0.7rem;">UC-05 Alerts</small>
-            </div>
-        </a>
-
-        <div class="sidebar-heading mt-3">Persistence & Storage</div>
-        <a href="/h2-console" target="_blank" class="sidebar-link">
-            <i class="fas fa-database text-light"></i>
-            <div>
-                <div>H2 DB Console</div>
-                <small class="text-muted" style="font-size: 0.7rem;">jdbc:h2:mem:medibookdb</small>
-            </div>
-        </a>
-
-        <div class="mt-auto sidebar-footer">
-            <div>Team: <strong>MLB-B4G1-07</strong></div>
-            <div>Spring Boot &bull; JPA &bull; Jakarta</div>
-        </div>
-    </aside>
-
-    <!-- Main Content Panel -->
+    <!-- Main Content Panel (UC-06 Isolated Scope) -->
     <main class="main-content">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
