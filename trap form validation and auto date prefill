@@ -1,6 +1,0 @@
-[33m426b8d3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32makthar/lab-diagnostic-orders[m[33m, [m[1;31morigin/akthar/lab-diagnostic-orders[m[33m)[m feat(ui): add dismissible feedback alert banners for validation messages
-[33me7ef676[m feat(validation): implement server-side date validation and flash messages in controller
-[33m5247637[m feat(validation): add Jakarta bean validation constraints to LabOrder entity
-[33m589c26c[m refactor(controller): integrate Factory and Strategy design patterns into order creation workflow
-[33mcb56710[m feat(pattern): implement Strategy Pattern for clinical urgency computation
-[33m3a073c6[m feat(pattern): implement Factory Pattern for clinical diagnostic tests
