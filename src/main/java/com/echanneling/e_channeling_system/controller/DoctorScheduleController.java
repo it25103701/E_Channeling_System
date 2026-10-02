@@ -1,5 +1,6 @@
 package com.echanneling.e_channeling_system.controller;
 
+import com.echanneling.e_channeling_system.dao.DoctorRepository;
 import com.echanneling.e_channeling_system.dao.DoctorScheduleRepository;
 import com.echanneling.e_channeling_system.model.DoctorSchedule;
 import com.echanneling.e_channeling_system.observer.DoctorScheduleNotifier;
@@ -20,7 +21,7 @@ import java.time.LocalDate;
 public class DoctorScheduleController {
 
     private final DoctorScheduleRepository doctorScheduleRepository;
-
+    private final DoctorRepository doctorRepository;
     private final DoctorReplacementService doctorReplacementService;
 
     // Observer Pattern - Concrete Subject
@@ -29,10 +30,11 @@ public class DoctorScheduleController {
 
     public DoctorScheduleController(
             DoctorScheduleRepository doctorScheduleRepository,
+            DoctorRepository doctorRepository,
             DoctorReplacementService doctorReplacementService) {
 
         this.doctorScheduleRepository = doctorScheduleRepository;
-
+        this.doctorRepository = doctorRepository;
         this.doctorReplacementService = doctorReplacementService;
 
         // Create Concrete Subject
@@ -62,6 +64,12 @@ public class DoctorScheduleController {
                 doctorScheduleRepository.findAll()
         );
 
+        // Send doctors to HTML
+        model.addAttribute(
+                "doctors",
+                doctorRepository.findAll()
+        );
+
         return "doctor-schedule";
     }
 
@@ -78,7 +86,23 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // VALIDATION 1 - PAST DATE
+        // VALIDATION 1 - DOCTOR EXISTS
+        // =====================================
+
+        if (doctorSchedule.getDoctorId() > 0 &&
+                !doctorRepository.existsById(
+                        doctorSchedule.getDoctorId())) {
+
+            bindingResult.rejectValue(
+                    "doctorId",
+                    "doctorNotFound",
+                    "Selected doctor does not exist"
+            );
+        }
+
+
+        // =====================================
+        // VALIDATION 2 - PAST DATE
         // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
@@ -94,7 +118,7 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // VALIDATION 2 - START / END TIME
+        // VALIDATION 3 - START / END TIME
         // =====================================
 
         if (doctorSchedule.getStartTime() != null &&
@@ -111,7 +135,7 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // VALIDATION 3 - OVERLAPPING SCHEDULE
+        // VALIDATION 4 - OVERLAPPING SCHEDULE
         // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
@@ -154,6 +178,11 @@ public class DoctorScheduleController {
                     doctorScheduleRepository.findAll()
             );
 
+            model.addAttribute(
+                    "doctors",
+                    doctorRepository.findAll()
+            );
+
             return "doctor-schedule";
         }
 
@@ -188,6 +217,11 @@ public class DoctorScheduleController {
         model.addAttribute(
                 "schedules",
                 doctorScheduleRepository.findAll()
+        );
+
+        model.addAttribute(
+                "doctors",
+                doctorRepository.findAll()
         );
 
         return "doctor-schedule";
@@ -241,19 +275,17 @@ public class DoctorScheduleController {
             @PathVariable int id,
             RedirectAttributes redirectAttributes) {
 
-        // Find replacement doctor
         String result =
                 doctorReplacementService
                         .reassignDoctor(id);
 
-        // Show result on next page
         redirectAttributes.addFlashAttribute(
                 "reassignmentMessage",
                 result
         );
 
-        // Notify patients if reassignment succeeded
-        if (result.contains("reassigned from Doctor ID")) {
+        if (result.contains(
+                "reassigned from Doctor ID")) {
 
             doctorScheduleNotifier
                     .notifyObservers(
