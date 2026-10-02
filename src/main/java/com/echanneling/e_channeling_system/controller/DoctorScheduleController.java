@@ -42,7 +42,8 @@ public class DoctorScheduleController {
         this.doctorReplacementService = doctorReplacementService;
 
         // Create Concrete Subject
-        this.doctorScheduleNotifier = new DoctorScheduleNotifier();
+        this.doctorScheduleNotifier =
+                new DoctorScheduleNotifier();
 
         // Register Concrete Observer
         this.doctorScheduleNotifier.addObserver(
@@ -57,20 +58,19 @@ public class DoctorScheduleController {
 
     private void addCommonPageData(Model model) {
 
-        List<Doctor> doctors = doctorRepository.findAll();
+        List<Doctor> doctors =
+                doctorRepository.findAll();
 
         model.addAttribute(
                 "schedules",
                 doctorScheduleRepository.findAll()
         );
 
-        // Used by Assign Doctor dropdown
         model.addAttribute(
                 "doctors",
                 doctors
         );
 
-        // Used to display Doctor Name + Specialization
         Map<Integer, Doctor> doctorMap =
                 doctors.stream()
                         .collect(
@@ -92,7 +92,8 @@ public class DoctorScheduleController {
     // =========================================
 
     @GetMapping("/doctor-schedule")
-    public String showDoctorSchedulePage(Model model) {
+    public String showDoctorSchedulePage(
+            Model model) {
 
         model.addAttribute(
                 "doctorSchedule",
@@ -181,7 +182,9 @@ public class DoctorScheduleController {
         if (doctorSchedule.getStartTime() != null &&
                 doctorSchedule.getEndTime() != null &&
                 !doctorSchedule.getStartTime()
-                        .isBefore(doctorSchedule.getEndTime())) {
+                        .isBefore(
+                                doctorSchedule.getEndTime()
+                        )) {
 
             bindingResult.rejectValue(
                     "endTime",
@@ -192,14 +195,16 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // VALIDATION 5 - OVERLAPPING SCHEDULE
+        // VALIDATION 5 - DOCTOR OVERLAP
         // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
                 doctorSchedule.getStartTime() != null &&
                 doctorSchedule.getEndTime() != null &&
                 doctorSchedule.getStartTime()
-                        .isBefore(doctorSchedule.getEndTime()) &&
+                        .isBefore(
+                                doctorSchedule.getEndTime()
+                        ) &&
                 !"Cancelled".equalsIgnoreCase(
                         doctorSchedule.getStatus())) {
 
@@ -225,7 +230,44 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // CHECK VALIDATION ERRORS
+        // VALIDATION 6 - ROOM OVERLAP
+        // =====================================
+
+        if (doctorSchedule.getRoomNo() != null &&
+                !doctorSchedule.getRoomNo().isBlank() &&
+                doctorSchedule.getConsultationDate() != null &&
+                doctorSchedule.getStartTime() != null &&
+                doctorSchedule.getEndTime() != null &&
+                doctorSchedule.getStartTime()
+                        .isBefore(
+                                doctorSchedule.getEndTime()
+                        ) &&
+                !"Cancelled".equalsIgnoreCase(
+                        doctorSchedule.getStatus())) {
+
+            long roomOverlap =
+                    doctorScheduleRepository
+                            .countOverlappingRoomSchedules(
+                                    doctorSchedule.getRoomNo(),
+                                    doctorSchedule.getConsultationDate(),
+                                    doctorSchedule.getStartTime(),
+                                    doctorSchedule.getEndTime(),
+                                    doctorSchedule.getScheduleId()
+                            );
+
+            if (roomOverlap > 0) {
+
+                bindingResult.rejectValue(
+                        "roomNo",
+                        "roomConflict",
+                        "Room is already assigned during this time"
+                );
+            }
+        }
+
+
+        // =====================================
+        // CHECK ALL VALIDATION ERRORS
         // =====================================
 
         if (bindingResult.hasErrors()) {
@@ -236,6 +278,7 @@ public class DoctorScheduleController {
         }
 
 
+        // Save valid schedule
         doctorScheduleRepository.save(
                 doctorSchedule
         );
