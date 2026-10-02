@@ -19,61 +19,130 @@ public class DoctorDataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // Doctor 1001 - Cardiologist
-        if (!doctorRepository.existsById(1001)) {
+        addDoctor(
+                1001,
+                "Dr. Silva",
+                "Cardiologist",
+                "Available"
+        );
 
-            Doctor doctor1 = new Doctor(
-                    1001,
-                    "Dr. Silva",
-                    "Cardiologist",
-                    "Available"
-            );
+        addDoctor(
+                1002,
+                "Dr. Perera",
+                "Cardiologist",
+                "Available"
+        );
 
-            doctorRepository.save(doctor1);
-        }
+        addDoctor(
+                1003,
+                "Dr. Fernando",
+                "Dermatologist",
+                "Available"
+        );
+
+        addDoctor(
+                1004,
+                "Dr. Nimal",
+                "Cardiologist",
+                "Available"
+        );
+
+        addDoctor(
+                1005,
+                "Dr. Ahamed",
+                "Neurologist",
+                "Available"
+        );
+
+        addDoctor(
+                1006,
+                "Dr. Fathima",
+                "Neurologist",
+                "Available"
+        );
+
+        addDoctor(
+                1007,
+                "Dr. Kumara",
+                "Pediatrician",
+                "Available"
+        );
+
+        addDoctor(
+                1008,
+                "Dr. Shalini",
+                "Pediatrician",
+                "Available"
+        );
+
+        addDoctor(
+                1009,
+                "Dr. Rizwan",
+                "Orthopedic",
+                "Available"
+        );
+
+        addDoctor(
+                1010,
+                "Dr. Tharushi",
+                "Orthopedic",
+                "Available"
+        );
+
+        addDoctor(
+                1011,
+                "Dr. Imran",
+                "ENT Specialist",
+                "Available"
+        );
+
+        addDoctor(
+                1012,
+                "Dr. Nadeesha",
+                "ENT Specialist",
+                "Available"
+        );
+
+        addDoctor(
+                1013,
+                "Dr. Hashan",
+                "Dermatologist",
+                "Available"
+        );
+
+        addDoctor(
+                1014,
+                "Dr. Rizana",
+                "General Physician",
+                "Available"
+        );
+
+        addDoctor(
+                1015,
+                "Dr. Sameera",
+                "General Physician",
+                "Available"
+        );
+    }
 
 
-        // Doctor 1002 - Cardiologist
-        // Can replace Doctor 1001
-        if (!doctorRepository.existsById(1002)) {
+    private void addDoctor(
+            int doctorId,
+            String doctorName,
+            String specialization,
+            String availabilityStatus) {
 
-            Doctor doctor2 = new Doctor(
-                    1002,
-                    "Dr. Perera",
-                    "Cardiologist",
-                    "Available"
-            );
+        if (!doctorRepository.existsById(doctorId)) {
 
-            doctorRepository.save(doctor2);
-        }
+            Doctor doctor =
+                    new Doctor(
+                            doctorId,
+                            doctorName,
+                            specialization,
+                            availabilityStatus
+                    );
 
-
-        // Doctor 1003 - Dermatologist
-        if (!doctorRepository.existsById(1003)) {
-
-            Doctor doctor3 = new Doctor(
-                    1003,
-                    "Dr. Fernando",
-                    "Dermatologist",
-                    "Available"
-            );
-
-            doctorRepository.save(doctor3);
-        }
-
-
-        // Doctor 1004 - Cardiologist
-        // Another possible replacement
-        if (!doctorRepository.existsById(1004)) {
-
-            Doctor doctor4 = new Doctor(
-                    1004,
-                    "Dr. Nimal",
-                    "Cardiologist",
-                    "Available"
-            );
-
-            doctorRepository.save(doctor4);
+            doctorRepository.save(doctor);
         }
     }
 }
