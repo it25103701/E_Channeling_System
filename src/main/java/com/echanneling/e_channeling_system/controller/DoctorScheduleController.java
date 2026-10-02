@@ -2,6 +2,7 @@ package com.echanneling.e_channeling_system.controller;
 
 import com.echanneling.e_channeling_system.dao.DoctorRepository;
 import com.echanneling.e_channeling_system.dao.DoctorScheduleRepository;
+import com.echanneling.e_channeling_system.model.Doctor;
 import com.echanneling.e_channeling_system.model.DoctorSchedule;
 import com.echanneling.e_channeling_system.observer.DoctorScheduleNotifier;
 import com.echanneling.e_channeling_system.observer.PatientNotificationObserver;
@@ -64,7 +65,6 @@ public class DoctorScheduleController {
                 doctorScheduleRepository.findAll()
         );
 
-        // Send doctors to HTML
         model.addAttribute(
                 "doctors",
                 doctorRepository.findAll()
@@ -89,20 +89,46 @@ public class DoctorScheduleController {
         // VALIDATION 1 - DOCTOR EXISTS
         // =====================================
 
-        if (doctorSchedule.getDoctorId() > 0 &&
-                !doctorRepository.existsById(
-                        doctorSchedule.getDoctorId())) {
+        Doctor selectedDoctor = null;
+
+        if (doctorSchedule.getDoctorId() > 0) {
+
+            selectedDoctor =
+                    doctorRepository
+                            .findById(
+                                    doctorSchedule.getDoctorId()
+                            )
+                            .orElse(null);
+
+            if (selectedDoctor == null) {
+
+                bindingResult.rejectValue(
+                        "doctorId",
+                        "doctorNotFound",
+                        "Selected doctor does not exist"
+                );
+            }
+        }
+
+
+        // =====================================
+        // VALIDATION 2 - DOCTOR AVAILABLE
+        // =====================================
+
+        if (selectedDoctor != null &&
+                !"Available".equalsIgnoreCase(
+                        selectedDoctor.getAvailabilityStatus())) {
 
             bindingResult.rejectValue(
                     "doctorId",
-                    "doctorNotFound",
-                    "Selected doctor does not exist"
+                    "doctorUnavailable",
+                    "Selected doctor is currently unavailable"
             );
         }
 
 
         // =====================================
-        // VALIDATION 2 - PAST DATE
+        // VALIDATION 3 - PAST DATE
         // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
@@ -118,7 +144,7 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // VALIDATION 3 - START / END TIME
+        // VALIDATION 4 - START / END TIME
         // =====================================
 
         if (doctorSchedule.getStartTime() != null &&
@@ -135,7 +161,7 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // VALIDATION 4 - OVERLAPPING SCHEDULE
+        // VALIDATION 5 - OVERLAPPING SCHEDULE
         // =====================================
 
         if (doctorSchedule.getConsultationDate() != null &&
