@@ -64,7 +64,7 @@ public class NotificationController {
         return "redirect:/notifications";
     }
 
-    // 3. Edit: Populate Form with Existing Data
+    // 3. Edit: Populate Form with Existing   Data
     @GetMapping("/edit/{id}")
     public String editNotification(@PathVariable Long id, Model model) {
         model.addAttribute("notifications", notificationService.getAllNotifications());
