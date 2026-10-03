@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Claim Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; }
+        td { padding: 6px 12px; }
+    </style>
+</head>
+<body>
+<h2>Claim Status</h2>
+<table>
+    <tr><td>Claim ID</td><td th:text="${claim.id}"></td></tr>
+    <tr><td>Patient</td><td th:text="${claim.patientName}"></td></tr>
+    <tr><td>Appointment ID</td><td th:text="${claim.appointmentId}"></td></tr>
+    <tr><td>Insurer</td><td th:text="${claim.insurerName}"></td></tr>
+    <tr><td>Policy number</td><td th:text="${claim.policyNumber}"></td></tr>
+    <tr><td>Status</td><td><b th:text="${claim.status}"></b></td></tr>
+    <tr th:if="${claim.rejectionReason != null}">
+        <td>Reason</td><td th:text="${claim.rejectionReason}"></td></tr>
+    <tr><td>Channeling fee</td><td th:text="${claim.channelingFee}"></td></tr>
+    <tr><td>Coverage %</td><td th:text="${claim.coveragePercentage}"></td></tr>
+    <tr><td>You pay (net payable)</td><td><b th:text="${claim.netPayable}"></b></td></tr>
+</table>
+<p><a th:href="@{/insurance/claim/new}">Submit another claim</a></p>
+</body>
+</html>

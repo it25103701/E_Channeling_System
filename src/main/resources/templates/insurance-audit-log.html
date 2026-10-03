@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Claim Audit Log</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+<h2>Claim Audit Log</h2>
+<table>
+    <tr><th>Time</th><th>Claim ID</th><th>Action</th><th>Reason</th><th>By</th></tr>
+    <tr th:each="l : ${logs}">
+        <td th:text="${l.actionTime}"></td>
+        <td th:text="${l.claimId}"></td>
+        <td th:text="${l.action}"></td>
+        <td th:text="${l.reason}"></td>
+        <td th:text="${l.actedBy}"></td>
+    </tr>
+</table>
+<p><a th:href="@{/insurance/admin/claims}">Back to claims</a></p>
+</body>
+</html>
