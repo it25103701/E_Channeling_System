@@ -2,27 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Claim Status</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; }
-        td { padding: 6px 12px; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/insurance.css}">
 </head>
 <body>
-<h2>Claim Status</h2>
-<table>
-    <tr><td>Claim ID</td><td th:text="${claim.id}"></td></tr>
-    <tr><td>Patient</td><td th:text="${claim.patientName}"></td></tr>
-    <tr><td>Appointment ID</td><td th:text="${claim.appointmentId}"></td></tr>
-    <tr><td>Insurer</td><td th:text="${claim.insurerName}"></td></tr>
-    <tr><td>Policy number</td><td th:text="${claim.policyNumber}"></td></tr>
-    <tr><td>Status</td><td><b th:text="${claim.status}"></b></td></tr>
-    <tr th:if="${claim.rejectionReason != null}">
-        <td>Reason</td><td th:text="${claim.rejectionReason}"></td></tr>
-    <tr><td>Channeling fee</td><td th:text="${claim.channelingFee}"></td></tr>
-    <tr><td>Coverage %</td><td th:text="${claim.coveragePercentage}"></td></tr>
-    <tr><td>You pay (net payable)</td><td><b th:text="${claim.netPayable}"></b></td></tr>
-</table>
-<p><a th:href="@{/insurance/claim/new}">Submit another claim</a></p>
+<div class="navbar">
+    <span class="mark">✚</span>
+    <span class="brand">MediBook Insurance</span>
+    <a th:href="@{/insurance/claim/new}">New Claim</a>
+    <a th:href="@{/insurance/admin/claims}">Admin Claims</a>
+    <a th:href="@{/insurance/admin/audit-log}">Audit Log</a>
+</div>
+<div class="container">
+    <div class="sheet">
+        <h2>Claim Status</h2>
+        <span class="seal" th:classappend="'seal-' + ${claim.status}">
+            <span class="dot"></span><span th:text="${claim.status}"></span>
+        </span>
+        <div class="receipt-row"><span>Claim ID</span><span th:text="${claim.id}"></span></div>
+        <div class="receipt-row"><span>Patient</span><span th:text="${claim.patientName}"></span></div>
+        <div class="receipt-row"><span>Appointment ID</span><span th:text="${claim.appointmentId}"></span></div>
+        <div class="receipt-row"><span>Insurer</span><span th:text="${claim.insurerName}"></span></div>
+        <div class="receipt-row"><span>Policy number</span><span th:text="${claim.policyNumber}"></span></div>
+        <div class="receipt-row"><span>Channeling fee</span><span th:text="'Rs. ' + ${#numbers.formatDecimal(claim.channelingFee, 1, 'COMMA', 2, 'POINT')}"></span></div>
+        <div class="receipt-row"><span>Coverage</span><span th:text="${claim.coveragePercentage} + '%'"></span></div>
+        <div class="reason-strip" th:if="${claim.rejectionReason != null}"><b>Reason:</b> <span th:text="${claim.rejectionReason}"></span></div>
+        <div class="total-block">
+            <span class="label">You pay</span>
+            <span class="amount" th:text="'Rs. ' + ${#numbers.formatDecimal(claim.netPayable, 1, 'COMMA', 2, 'POINT')}"></span>
+        </div>
+        <div class="links"><a class="btn" th:href="@{/insurance/claim/new}">Submit another claim</a></div>
+    </div>
+</div>
 </body>
 </html>

@@ -2,47 +2,63 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Claims - Financial Admin</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        form { margin: 4px 0; }
-        input { width: 110px; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/insurance.css}">
 </head>
 <body>
-<h2>Insurance Claims (Financial Admin)</h2>
-<table>
-    <tr>
-        <th>ID</th><th>Patient</th><th>Insurer</th><th>Policy</th><th>Expiry</th>
-        <th>Balance</th><th>Fee</th><th>Coverage %</th><th>Net payable</th>
-        <th>Status</th><th>Reason</th><th>Actions</th>
-    </tr>
-    <tr th:each="c : ${claims}">
-        <td th:text="${c.id}"></td>
-        <td th:text="${c.patientName}"></td>
-        <td th:text="${c.insurerName}"></td>
-        <td th:text="${c.policyNumber}"></td>
-        <td th:text="${c.policyExpiryDate}"></td>
-        <td th:text="${c.deductibleBalance}"></td>
-        <td th:text="${c.channelingFee}"></td>
-        <td th:text="${c.coveragePercentage}"></td>
-        <td th:text="${c.netPayable}"></td>
-        <td th:text="${c.status}"></td>
-        <td th:text="${c.rejectionReason}"></td>
-        <td th:if="${c.status == 'PENDING' or c.status == 'NEEDS_REVIEW'}">
-            <form th:action="@{/insurance/admin/claims/{id}/approve(id=${c.id})}" method="post">
-                <input type="number" name="coveragePercentage" min="0" max="100" step="0.1" placeholder="Coverage %" required>
-                <button type="submit">Approve</button>
-            </form>
-            <form th:action="@{/insurance/admin/claims/{id}/reject(id=${c.id})}" method="post">
-                <input type="text" name="reason" placeholder="Reason" required>
-                <button type="submit">Reject</button>
-            </form>
-        </td>
-        <td th:unless="${c.status == 'PENDING' or c.status == 'NEEDS_REVIEW'}">Done</td>
-    </tr>
-</table>
+<div class="navbar">
+    <span class="mark">✚</span>
+    <span class="brand">MediBook Insurance</span>
+    <a th:href="@{/insurance/claim/new}">New Claim</a>
+    <a th:href="@{/insurance/admin/claims}">Admin Claims</a>
+    <a th:href="@{/insurance/admin/audit-log}">Audit Log</a>
+</div>
+<div class="container wide">
+    <h2 style="margin-bottom:18px;">Claims Register</h2>
+    <div class="table-wrap">
+        <table class="data">
+            <tr>
+                <th>ID</th><th>Patient</th><th>Insurer</th><th>Policy</th><th>Expiry</th>
+                <th>Balance</th><th>Fee</th><th>Coverage</th><th>Net payable</th>
+                <th>Status</th><th>Reason</th><th>Actions</th>
+            </tr>
+            <tr th:if="${#lists.isEmpty(claims)}"><td colspan="12" class="empty">No claims yet.</td></tr>
+            <tr th:each="c : ${claims}">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.patientName}"></td>
+                <td th:text="${c.insurerName}"></td>
+                <td th:text="${c.policyNumber}"></td>
+                <td th:text="${c.policyExpiryDate}"></td>
+                <td th:text="${#numbers.formatDecimal(c.deductibleBalance, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${#numbers.formatDecimal(c.channelingFee, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${c.coveragePercentage} + '%'"></td>
+                <td th:text="${#numbers.formatDecimal(c.netPayable, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td><span class="status-tag" th:classappend="'st-' + ${c.status}"><span class="dot"></span><span th:text="${c.status}"></span></span></td>
+                <td th:text="${c.rejectionReason}"></td>
+                <td class="actions" th:if="${c.status == 'PENDING' or c.status == 'NEEDS_REVIEW'}">
+                    <form th:action="@{/insurance/admin/claims/{id}/approve(id=${c.id})}" method="post">
+                        <input type="number" name="coveragePercentage" min="0" max="100" step="0.1" placeholder="Coverage %" required>
+                        <button type="submit" class="btn btn-success btn-small">Approve</button>
+                    </form>
+                    <form th:action="@{/insurance/admin/claims/{id}/reject(id=${c.id})}" method="post">
+                        <input type="text" name="reason" placeholder="Reason" required>
+                        <button type="submit" class="btn btn-danger btn-small">Reject</button>
+                    </form>
+                </td>
+                <td th:unless="${c.status == 'PENDING' or c.status == 'NEEDS_REVIEW'}">
+                    <span class="done-tag">Done</span>
+                    <form th:action="@{/insurance/admin/claims/{id}/delete(id=${c.id})}" method="post" style="margin-top:6px;"
+                          onsubmit="return confirm('Permanently delete this claim? This cannot be undone.');">
+                        <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 </body>
 </html>

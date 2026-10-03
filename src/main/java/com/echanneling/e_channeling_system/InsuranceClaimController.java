@@ -68,5 +68,11 @@ public class InsuranceClaimController {
         model.addAttribute("logs", claimService.getAuditLogs());
         return "insurance-audit-log";
     }
+
+    @PostMapping("/admin/claims/{id}/delete")
+    public String delete(@PathVariable Long id) {
+        claimService.deleteClaim(id);
+        return "redirect:/insurance/admin/claims";
+    }
 }
 

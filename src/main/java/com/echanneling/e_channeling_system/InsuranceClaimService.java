@@ -108,4 +108,10 @@ public class InsuranceClaimService {
     private void logAction(Long claimId, String action, String reason, String actedBy) {
         auditLogRepository.save(new ClaimAuditLog(claimId, action, reason, actedBy));
     }
+
+    // Permanently remove a claim (testing/cleanup only — bypasses the audit trail)
+    public void deleteClaim(Long id) {
+        claimRepository.deleteById(id);
+    }
+
 }

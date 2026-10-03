@@ -2,25 +2,35 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Claim Audit Log</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/insurance.css}">
 </head>
 <body>
-<h2>Claim Audit Log</h2>
-<table>
-    <tr><th>Time</th><th>Claim ID</th><th>Action</th><th>Reason</th><th>By</th></tr>
-    <tr th:each="l : ${logs}">
-        <td th:text="${l.actionTime}"></td>
-        <td th:text="${l.claimId}"></td>
-        <td th:text="${l.action}"></td>
-        <td th:text="${l.reason}"></td>
-        <td th:text="${l.actedBy}"></td>
-    </tr>
-</table>
-<p><a th:href="@{/insurance/admin/claims}">Back to claims</a></p>
+<div class="navbar">
+    <span class="mark">✚</span>
+    <span class="brand">MediBook Insurance</span>
+    <a th:href="@{/insurance/claim/new}">New Claim</a>
+    <a th:href="@{/insurance/admin/claims}">Admin Claims</a>
+    <a th:href="@{/insurance/admin/audit-log}">Audit Log</a>
+</div>
+<div class="container">
+    <div class="sheet">
+        <h2>Claim Audit Log</h2>
+        <p class="subtitle">A record of every approval, rejection and cancellation, most recent first.</p>
+        <div class="timeline">
+            <p th:if="${#lists.isEmpty(logs)}" class="empty">No actions recorded yet.</p>
+            <div class="tl-entry" th:each="l : ${logs}" th:classappend="'a-' + ${l.action}">
+                <div class="tl-time" th:text="${#temporals.format(l.actionTime, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                <div class="tl-title" th:text="${l.action} + ' — Claim #' + ${l.claimId}"></div>
+                <div class="tl-meta" th:text="${l.reason} + ' · by ' + ${l.actedBy}"></div>
+            </div>
+        </div>
+        <div class="links"><a class="btn" th:href="@{/insurance/admin/claims}">Back to claims</a></div>
+    </div>
+</div>
 </body>
 </html>
