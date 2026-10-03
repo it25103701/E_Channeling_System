@@ -75,7 +75,11 @@ public class NotificationController {
     // 4. Delete: Remove Record
     @GetMapping("/delete/{id}")
     public String deleteNotification(@PathVariable Long id) {
+        // Deletes the notification with the specified ID
         notificationService.deleteNotification(id);
+
+        // Redirects back to the notifications page
+        // so the updated list can be displayed
         return "redirect:/notifications";
     }
 }
