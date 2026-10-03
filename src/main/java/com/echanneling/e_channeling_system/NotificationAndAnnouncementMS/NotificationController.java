@@ -14,7 +14,7 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    // 1. Read: Display Notifications Table & Empty Form
+    // 1. Read: Display Notifications Table & Form
     @GetMapping
     public String showNotificationsPage(Model model) {
         model.addAttribute("notifications", notificationService.getAllNotifications());
@@ -26,14 +26,45 @@ public class NotificationController {
     @PostMapping("/save")
     public String saveNotification(@ModelAttribute("notification") Notification notification) {
         if (notification.getId() != null) {
+            // Update existing record
             notificationService.updateNotification(notification.getId(), notification);
         } else {
-            notificationService.createNotification(notification);
+            // Create new record(s)
+            if ("DIRECT".equals(notification.getRecipientType())
+                    && notification.getPatientId() != null
+                    && !notification.getPatientId().trim().isEmpty()) {
+
+                // Split multiple comma-separated Patient IDs (e.g., "P-101, P-102, P-103")
+                String[] patientIds = notification.getPatientId().split(",");
+
+                for (String pid : patientIds) {
+                    String cleanPid = pid.trim();
+                    if (!cleanPid.isEmpty()) {
+                        // FACTORY PATTERN: Instantiate direct notification via factory method
+                        Notification singleNotif = NotificationFactory.createDirectNotification(
+                                notification.getTitle(),
+                                notification.getMessage(),
+                                notification.getType(),
+                                cleanPid
+                        );
+                        notificationService.createNotification(singleNotif);
+                    }
+                }
+            } else {
+                // FACTORY PATTERN: Instantiate broadcast notification via factory method
+                Notification broadcastNotif = NotificationFactory.createBroadcastNotification(
+                        notification.getTitle(),
+                        notification.getMessage(),
+                        notification.getType(),
+                        notification.getPreferenceRules()
+                );
+                notificationService.createNotification(broadcastNotif);
+            }
         }
         return "redirect:/notifications";
     }
 
-    // 3. Edit: Populate Form with Existing Record Data
+    // 3. Edit: Populate Form with Existing Data
     @GetMapping("/edit/{id}")
     public String editNotification(@PathVariable Long id, Model model) {
         model.addAttribute("notifications", notificationService.getAllNotifications());
@@ -41,7 +72,7 @@ public class NotificationController {
         return "notifications";
     }
 
-    // 4. Delete: Remove Record and Refresh View
+    // 4. Delete: Remove Record
     @GetMapping("/delete/{id}")
     public String deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotification(id);
