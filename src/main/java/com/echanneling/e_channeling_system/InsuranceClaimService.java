@@ -1,5 +1,7 @@
 package com.echanneling.e_channeling_system;
 
+import com.echanneling.e_channeling_system.dto.AppointmentResponse;
+import com.echanneling.e_channeling_system.service.AppointmentService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,15 +12,25 @@ public class InsuranceClaimService {
 
     private final InsuranceClaimRepository claimRepository;
     private final ClaimAuditLogRepository auditLogRepository;
+    private final AppointmentService appointmentService;
 
     public InsuranceClaimService(InsuranceClaimRepository claimRepository,
-                                 ClaimAuditLogRepository auditLogRepository) {
+                                 ClaimAuditLogRepository auditLogRepository,
+                                 AppointmentService appointmentService) {
         this.claimRepository = claimRepository;
         this.auditLogRepository = auditLogRepository;
+        this.appointmentService = appointmentService;
     }
 
     // CREATE: patient submits a pre-authorisation claim
     public InsuranceClaim submitClaim(InsuranceClaim claim) {
+        // Link to the Appointment module: the appointment must exist
+        AppointmentResponse appointment = appointmentService.get(claim.getAppointmentId());
+        if ("CANCELLED".equals(appointment.getStatus())) {
+            throw new IllegalArgumentException("Cannot submit a claim for a cancelled appointment");
+        }
+        claim.setPatientName(appointment.getPatientName());
+
         claim.setCreatedAt(LocalDateTime.now());
         claim.setCoveragePercentage(0);
         claim.setNetPayable(claim.getChannelingFee());
