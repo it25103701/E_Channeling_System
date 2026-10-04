@@ -10,8 +10,8 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-    private String message;
+    private String title;            //Stores the notification title.
+    private String message;          // Stores the actual notification content.
     private String type;            // e.g., "SYSTEM", "CRITICAL", "GENERAL"
     private String preferenceRules; // e.g., "All Doctors / Patients"
 
@@ -19,7 +19,21 @@ public class Notification {
     private String recipientType;   // "BROADCAST" or "DIRECT"
     private String patientId;       // Single ID or comma-separated IDs (e.g., "P-101, P-102")
 
+    //default constructor.
+
     public Notification() {}
+
+    public Notification(Long id, String title, String message, String type, String preferenceRules, String recipientType, String patientId) {
+        this.id = id;
+        this.title = title;
+        this.message = message;
+        this.type = type;
+        this.preferenceRules = preferenceRules;
+        this.recipientType = recipientType;
+        this.patientId = patientId;
+    }
+
+//Getter and Setter
 
     public Long getId() {
         return id;
