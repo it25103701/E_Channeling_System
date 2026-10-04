@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBook ERP - Insurance Claim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/insurance.css}">
+</head>
+<body>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1 text-dark">Insurance Verification &amp; Claim Processing</h4>
+        <div class="text-muted small">Pre-authorisation claim &bull; Check your cover before the appointment</div>
+    </div>
+    <div class="d-flex gap-2">
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+            <i class="fas fa-circle text-success me-1" style="font-size: 0.55rem;"></i> System Online
+        </span>
+        <span class="badge bg-primary text-white px-3 py-2"><i class="fas fa-user me-1"></i> Patient</span>
+    </div>
+</div>
+
+<nav class="nav nav-pills mb-4 gap-1">
+    <a class="nav-link active" th:href="@{/insurance/claim/new}">New Claim</a>
+    <a class="nav-link" th:href="@{/insurance/admin/claims}">Admin Claims</a>
+    <a class="nav-link" th:href="@{/insurance/admin/audit-log}">Audit Log</a>
+</nav>
+
+<div class="surface-card p-4">
+    <h6 class="fw-bold mb-3 text-dark"><i class="fas fa-shield-halved text-primary me-2"></i>Submit Pre-Authorisation Claim</h6>
+    <form th:action="@{/insurance/claim}" th:object="${claim}" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Patient name</label>
+            <input type="text" class="form-control" th:field="*{patientName}" placeholder="Filled in automatically from the appointment" readonly>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Appointment ID <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" th:field="*{appointmentId}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Insurer name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" th:field="*{insurerName}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Policy number <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" th:field="*{policyNumber}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Policy expiry date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" th:field="*{policyExpiryDate}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Remaining deductible balance (Rs.) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{deductibleBalance}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Channeling fee (Rs.) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{channelingFee}" required>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
+                <i class="fas fa-file-medical me-1"></i> Submit claim
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
