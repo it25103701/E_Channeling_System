@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBook ERP - Claim Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/insurance.css}">
+</head>
+<body>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1 text-dark">Insurance Verification &amp; Claim Processing</h4>
+        <div class="text-muted small">Claim status &bull; What your insurer covers and what you pay</div>
+    </div>
+    <div class="d-flex gap-2">
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+            <i class="fas fa-circle text-success me-1" style="font-size: 0.55rem;"></i> System Online
+        </span>
+        <span class="badge bg-primary text-white px-3 py-2"><i class="fas fa-user me-1"></i> Patient</span>
+    </div>
+</div>
+
+<nav class="nav nav-pills mb-4 gap-1">
+    <a class="nav-link" th:href="@{/insurance/claim/new}">New Claim</a>
+    <a class="nav-link" th:href="@{/insurance/admin/claims}">Admin Claims</a>
+    <a class="nav-link" th:href="@{/insurance/admin/audit-log}">Audit Log</a>
+</nav>
+
+<div class="surface-card p-4" style="max-width: 720px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-receipt text-primary me-2"></i>Claim Status</h6>
+        <span class="status-badge" th:classappend="'st-' + ${claim.status}" th:text="${claim.status}">PENDING</span>
+    </div>
+
+    <div class="receipt-row"><span>Claim ID</span><span th:text="${claim.id}"></span></div>
+    <div class="receipt-row"><span>Patient</span><span th:text="${claim.patientName}"></span></div>
+    <div class="receipt-row"><span>Appointment ID</span><span th:text="${claim.appointmentId}"></span></div>
+    <div class="receipt-row"><span>Insurer</span><span th:text="${claim.insurerName}"></span></div>
+    <div class="receipt-row"><span>Policy number</span><span th:text="${claim.policyNumber}"></span></div>
+    <div class="receipt-row"><span>Channeling fee</span><span th:text="'Rs. ' + ${#numbers.formatDecimal(claim.channelingFee, 1, 'COMMA', 2, 'POINT')}"></span></div>
+    <div class="receipt-row"><span>Coverage</span><span th:text="${claim.coveragePercentage} + '%'"></span></div>
+
+    <div class="alert alert-danger mt-3 mb-0" th:if="${claim.rejectionReason != null}">
+        <i class="fas fa-circle-exclamation me-2"></i><b>Reason:</b> <span th:text="${claim.rejectionReason}"></span>
+    </div>
+
+    <div class="total-block">
+        <span class="label">You pay</span>
+        <span class="amount" th:text="'Rs. ' + ${#numbers.formatDecimal(claim.netPayable, 1, 'COMMA', 2, 'POINT')}"></span>
+    </div>
+
+    <div class="mt-4">
+        <a class="btn btn-primary px-4" th:href="@{/insurance/claim/new}"><i class="fas fa-plus me-1"></i> Submit another claim</a>
+    </div>
+</div>
+
+</body>
+</html>

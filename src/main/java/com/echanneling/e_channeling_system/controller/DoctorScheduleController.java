@@ -1,5 +1,6 @@
 package com.echanneling.e_channeling_system.controller;
 
+<<<<<<< HEAD
 import com.echanneling.e_channeling_system.dao.DoctorRepository;
 import com.echanneling.e_channeling_system.dao.DoctorScheduleRepository;
 import com.echanneling.e_channeling_system.model.Doctor;
@@ -8,6 +9,10 @@ import com.echanneling.e_channeling_system.observer.DoctorScheduleNotifier;
 import com.echanneling.e_channeling_system.observer.PatientNotificationObserver;
 import com.echanneling.e_channeling_system.service.DoctorReplacementService;
 
+=======
+import com.echanneling.e_channeling_system.repository.DoctorScheduleRepository;
+import com.echanneling.e_channeling_system.entity.DoctorSchedule;
+>>>>>>> main
 import jakarta.validation.Valid;
 
 import org.springframework.stereotype.Controller;
