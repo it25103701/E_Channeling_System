@@ -1,5 +1,7 @@
-package com.echanneling.e_channeling_system;
+package com.echanneling.e_channeling_system.controller;
 
+import com.echanneling.e_channeling_system.entity.InsuranceClaim;
+import com.echanneling.e_channeling_system.service.InsuranceClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,12 @@ public class InsuranceClaimController {
 
     public InsuranceClaimController(InsuranceClaimService claimService) {
         this.claimService = claimService;
+    }
+
+    // Default route: visiting http://localhost:8080/insurance opens the admin claims dashboard
+    @GetMapping
+    public String index() {
+        return "redirect:/insurance/admin/claims";
     }
 
     // Patient: show the claim form
@@ -62,6 +70,7 @@ public class InsuranceClaimController {
         claimService.cancelClaim(id, reason);
         return "redirect:/insurance/admin/claims";
     }
+
     // Financial Admin: view the audit log
     @GetMapping("/admin/audit-log")
     public String auditLog(Model model) {
@@ -75,4 +84,3 @@ public class InsuranceClaimController {
         return "redirect:/insurance/admin/claims";
     }
 }
-

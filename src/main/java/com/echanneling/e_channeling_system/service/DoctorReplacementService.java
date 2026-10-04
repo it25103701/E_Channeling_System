@@ -1,9 +1,9 @@
 package com.echanneling.e_channeling_system.service;
 
-import com.echanneling.e_channeling_system.dao.DoctorRepository;
-import com.echanneling.e_channeling_system.dao.DoctorScheduleRepository;
-import com.echanneling.e_channeling_system.model.Doctor;
-import com.echanneling.e_channeling_system.model.DoctorSchedule;
+import com.echanneling.e_channeling_system.entity.Doctor;
+import com.echanneling.e_channeling_system.entity.DoctorSchedule;
+import com.echanneling.e_channeling_system.repository.DoctorRepository;
+import com.echanneling.e_channeling_system.repository.DoctorScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,76 +26,56 @@ public class DoctorReplacementService {
     @Transactional
     public String reassignDoctor(int scheduleId) {
 
-        // Find the existing schedule
-        DoctorSchedule schedule =
-                doctorScheduleRepository
-                        .findById(scheduleId)
-                        .orElse(null);
+        // 1. Find the existing schedule
+        DoctorSchedule schedule = doctorScheduleRepository
+                .findById(scheduleId)
+                .orElse(null);
 
         if (schedule == null) {
             return "Schedule not found.";
         }
 
-        // Find the doctor currently assigned to the schedule
-        Doctor originalDoctor =
-                doctorRepository
-                        .findById(schedule.getDoctorId())
-                        .orElse(null);
+        // 2. Find the doctor currently assigned to the schedule
+        Doctor originalDoctor = doctorRepository
+                .findById((long) schedule.getDoctorId())
+                .orElse(null);
 
         if (originalDoctor == null) {
             return "Original doctor not found.";
         }
 
-        // Mark original doctor as unavailable
-        originalDoctor.setAvailabilityStatus("Unavailable");
-        doctorRepository.save(originalDoctor);
-
-        // Find doctors with the same specialization
-        List<Doctor> replacementDoctors =
-                doctorRepository
-                        .findBySpecializationIgnoreCaseAndAvailabilityStatusIgnoreCaseAndDoctorIdNot(
-                                originalDoctor.getSpecialization(),
-                                "Available",
-                                originalDoctor.getDoctorId()
-                        );
-
-        // Check each replacement doctor
-        for (Doctor replacementDoctor : replacementDoctors) {
-
-            long overlapCount =
-                    doctorScheduleRepository.countOverlappingSchedules(
-                            replacementDoctor.getDoctorId(),
-                            schedule.getConsultationDate(),
-                            schedule.getStartTime(),
-                            schedule.getEndTime(),
-                            0
-                    );
-
-            // Replacement doctor is free at this time
-            if (overlapCount == 0) {
-
-                int oldDoctorId = schedule.getDoctorId();
-
-                // Reassign existing schedule
-                schedule.setDoctorId(
-                        replacementDoctor.getDoctorId()
+        // 3. Find replacement doctors with the exact same specialization (excluding current doctor)
+        List<Doctor> replacementDoctors = doctorRepository
+                .findBySpecialisationIgnoreCaseAndIdNot(
+                        originalDoctor.getSpecialisation(),
+                        originalDoctor.getId()
                 );
 
+        // 4. Find the first replacement doctor who doesn't have an overlapping schedule
+        for (Doctor replacementDoctor : replacementDoctors) {
+
+            long overlapCount = doctorScheduleRepository.countOverlappingSchedules(
+                    replacementDoctor.getId().intValue(),
+                    schedule.getConsultationDate(),
+                    schedule.getStartTime(),
+                    schedule.getEndTime(),
+                    0
+            );
+
+            // Reassign if doctor is free
+            if (overlapCount == 0) {
+                int oldDoctorId = schedule.getDoctorId();
+                schedule.setDoctorId(replacementDoctor.getId().intValue());
                 doctorScheduleRepository.save(schedule);
 
-                return "Schedule ID " +
-                        schedule.getScheduleId() +
-                        " reassigned from Doctor ID " +
-                        oldDoctorId +
-                        " to Doctor ID " +
-                        replacementDoctor.getDoctorId() +
-                        " (" +
-                        replacementDoctor.getSpecialization() +
-                        ").";
+                return "Schedule ID " + schedule.getScheduleId() +
+                        " reassigned from Doctor ID " + oldDoctorId +
+                        " to Doctor ID " + replacementDoctor.getId() +
+                        " (" + replacementDoctor.getSpecialisation() + ").";
             }
         }
 
         return "No available replacement doctor found for specialization: " +
-                originalDoctor.getSpecialization();
+                originalDoctor.getSpecialisation();
     }
 }

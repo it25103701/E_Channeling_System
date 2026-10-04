@@ -1,7 +1,7 @@
 package com.echanneling.e_channeling_system.config;
 
-import com.echanneling.e_channeling_system.dao.DoctorRepository;
-import com.echanneling.e_channeling_system.model.Doctor;
+import com.echanneling.e_channeling_system.entity.Doctor;
+import com.echanneling.e_channeling_system.repository.DoctorRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -10,139 +10,44 @@ public class DoctorDataInitializer implements CommandLineRunner {
 
     private final DoctorRepository doctorRepository;
 
-    public DoctorDataInitializer(
-            DoctorRepository doctorRepository) {
-
+    public DoctorDataInitializer(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
 
     @Override
     public void run(String... args) {
 
-        addDoctor(
-                1001,
-                "Dr. Silva",
-                "Cardiologist",
-                "Available"
-        );
-
-        addDoctor(
-                1002,
-                "Dr. Perera",
-                "Cardiologist",
-                "Available"
-        );
-
-        addDoctor(
-                1003,
-                "Dr. Fernando",
-                "Dermatologist",
-                "Available"
-        );
-
-        addDoctor(
-                1004,
-                "Dr. Nimal",
-                "Cardiologist",
-                "Available"
-        );
-
-        addDoctor(
-                1005,
-                "Dr. Ahamed",
-                "Neurologist",
-                "Available"
-        );
-
-        addDoctor(
-                1006,
-                "Dr. Fathima",
-                "Neurologist",
-                "Available"
-        );
-
-        addDoctor(
-                1007,
-                "Dr. Kumara",
-                "Pediatrician",
-                "Available"
-        );
-
-        addDoctor(
-                1008,
-                "Dr. Shalini",
-                "Pediatrician",
-                "Available"
-        );
-
-        addDoctor(
-                1009,
-                "Dr. Rizwan",
-                "Orthopedic",
-                "Available"
-        );
-
-        addDoctor(
-                1010,
-                "Dr. Tharushi",
-                "Orthopedic",
-                "Available"
-        );
-
-        addDoctor(
-                1011,
-                "Dr. Imran",
-                "ENT Specialist",
-                "Available"
-        );
-
-        addDoctor(
-                1012,
-                "Dr. Nadeesha",
-                "ENT Specialist",
-                "Available"
-        );
-
-        addDoctor(
-                1013,
-                "Dr. Hashan",
-                "Dermatologist",
-                "Available"
-        );
-
-        addDoctor(
-                1014,
-                "Dr. Rizana",
-                "General Physician",
-                "Available"
-        );
-
-        addDoctor(
-                1015,
-                "Dr. Sameera",
-                "General Physician",
-                "Available"
-        );
+        if (doctorRepository.count() == 0) {
+            addDoctor("Dr. Silva", "Cardiologist", "MBBS, MD", "Room 101");
+            addDoctor("Dr. Perera", "Cardiologist", "MBBS, MD", "Room 102");
+            addDoctor("Dr. Fernando", "Dermatologist", "MBBS, DDV", "Room 103");
+            addDoctor("Dr. Nimal", "Cardiologist", "MBBS, MD", "Room 104");
+            addDoctor("Dr. Ahamed", "Neurologist", "MBBS, DM", "Room 105");
+            addDoctor("Dr. Fathima", "Neurologist", "MBBS, DM", "Room 106");
+            addDoctor("Dr. Kumara", "Pediatrician", "MBBS, DCH", "Room 107");
+            addDoctor("Dr. Shalini", "Pediatrician", "MBBS, MD", "Room 108");
+            addDoctor("Dr. Rizwan", "Orthopedic", "MBBS, MS", "Room 109");
+            addDoctor("Dr. Tharushi", "Orthopedic", "MBBS, MS", "Room 110");
+            addDoctor("Dr. Imran", "ENT Specialist", "MBBS, MS", "Room 111");
+            addDoctor("Dr. Nadeesha", "ENT Specialist", "MBBS, DLO", "Room 112");
+            addDoctor("Dr. Hashan", "Dermatologist", "MBBS, MD", "Room 113");
+            addDoctor("Dr. Rizana", "General Physician", "MBBS", "Room 114");
+            addDoctor("Dr. Sameera", "General Physician", "MBBS", "Room 115");
+        }
     }
 
-
     private void addDoctor(
-            int doctorId,
             String doctorName,
-            String specialization,
-            String availabilityStatus) {
+            String specialisation,
+            String qualification,
+            String clinic) {
 
-        if (!doctorRepository.existsById(doctorId)) {
-
-            Doctor doctor =
-                    new Doctor(
-                            doctorId,
-                            doctorName,
-                            specialization,
-                            availabilityStatus
-                    );
-
-            doctorRepository.save(doctor);
-        }
+        Doctor doctor = new Doctor(
+                doctorName,
+                specialisation,
+                qualification,
+                clinic
+        );
+        doctorRepository.save(doctor);
     }
 }
