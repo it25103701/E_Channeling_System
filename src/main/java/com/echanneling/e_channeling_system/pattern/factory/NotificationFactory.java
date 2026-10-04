@@ -1,4 +1,6 @@
-package com.echanneling.e_channeling_system.NotificationAndAnnouncementMS;
+package com.echanneling.e_channeling_system.pattern.factory;
+
+import com.echanneling.e_channeling_system.entity.Notification;
 
 public class NotificationFactory {
 

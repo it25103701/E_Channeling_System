@@ -1,5 +1,6 @@
-package com.echanneling.e_channeling_system.NotificationAndAnnouncementMS;
+package com.echanneling.e_channeling_system.observer;
 
+import com.echanneling.e_channeling_system.entity.Notification;
 import org.springframework.stereotype.Component;
 
 @Component

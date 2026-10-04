@@ -1,5 +1,8 @@
-package com.echanneling.e_channeling_system.NotificationAndAnnouncementMS;
+package com.echanneling.e_channeling_system.controller;
 
+import com.echanneling.e_channeling_system.pattern.factory.NotificationFactory;
+import com.echanneling.e_channeling_system.service.NotificationService;
+import com.echanneling.e_channeling_system.entity.Notification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

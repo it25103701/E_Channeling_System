@@ -1,5 +1,8 @@
-package com.echanneling.e_channeling_system.NotificationAndAnnouncementMS;
+package com.echanneling.e_channeling_system.service;
 
+import com.echanneling.e_channeling_system.entity.Notification;
+import com.echanneling.e_channeling_system.observer.NotificationObserver;
+import com.echanneling.e_channeling_system.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
