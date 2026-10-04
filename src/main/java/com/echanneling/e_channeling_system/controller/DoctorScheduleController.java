@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Controller
@@ -115,6 +116,25 @@ public class DoctorScheduleController {
             @Valid @ModelAttribute DoctorSchedule doctorSchedule,
             BindingResult bindingResult,
             Model model) {
+
+
+        // Check whether this is CREATE or UPDATE
+        boolean isUpdate =
+                doctorSchedule.getScheduleId() != 0;
+
+
+        // Keep old schedule details before updating
+        DoctorSchedule existingSchedule = null;
+
+        if (isUpdate) {
+
+            existingSchedule =
+                    doctorScheduleRepository
+                            .findById(
+                                    doctorSchedule.getScheduleId()
+                            )
+                            .orElse(null);
+        }
 
 
         // =====================================
@@ -267,7 +287,7 @@ public class DoctorScheduleController {
 
 
         // =====================================
-        // CHECK ALL VALIDATION ERRORS
+        // CHECK VALIDATION ERRORS
         // =====================================
 
         if (bindingResult.hasErrors()) {
@@ -278,10 +298,96 @@ public class DoctorScheduleController {
         }
 
 
-        // Save valid schedule
+        // =====================================
+        // CHECK WHETHER UPDATE CHANGED DETAILS
+        // =====================================
+
+        boolean scheduleChanged = false;
+
+        if (isUpdate && existingSchedule != null) {
+
+            scheduleChanged =
+
+                    existingSchedule.getDoctorId()
+                            != doctorSchedule.getDoctorId()
+
+                            ||
+
+                            !Objects.equals(
+                                    existingSchedule.getConsultationDate(),
+                                    doctorSchedule.getConsultationDate()
+                            )
+
+                            ||
+
+                            !Objects.equals(
+                                    existingSchedule.getStartTime(),
+                                    doctorSchedule.getStartTime()
+                            )
+
+                            ||
+
+                            !Objects.equals(
+                                    existingSchedule.getEndTime(),
+                                    doctorSchedule.getEndTime()
+                            )
+
+                            ||
+
+                            existingSchedule.getSlotCapacity()
+                                    != doctorSchedule.getSlotCapacity()
+
+                            ||
+
+                            !Objects.equals(
+                                    existingSchedule.getRoomNo(),
+                                    doctorSchedule.getRoomNo()
+                            )
+
+                            ||
+
+                            !Objects.equals(
+                                    existingSchedule.getStatus(),
+                                    doctorSchedule.getStatus()
+                            );
+        }
+
+
+        // =====================================
+        // SAVE
+        // =====================================
+
         doctorScheduleRepository.save(
                 doctorSchedule
         );
+
+
+        // =====================================
+        // OBSERVER - UPDATE NOTIFICATION
+        // =====================================
+
+        if (isUpdate && scheduleChanged) {
+
+            String message =
+                    "Schedule ID " +
+                            doctorSchedule.getScheduleId() +
+                            " has been updated. " +
+                            "Doctor ID: " +
+                            doctorSchedule.getDoctorId() +
+                            ", Date: " +
+                            doctorSchedule.getConsultationDate() +
+                            ", Time: " +
+                            doctorSchedule.getStartTime() +
+                            " - " +
+                            doctorSchedule.getEndTime() +
+                            ", Room: " +
+                            doctorSchedule.getRoomNo() +
+                            ".";
+
+            doctorScheduleNotifier
+                    .notifyObservers(message);
+        }
+
 
         return "redirect:/doctor-schedule";
     }
