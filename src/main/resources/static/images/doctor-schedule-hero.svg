@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="520"
+     height="360"
+     viewBox="0 0 520 360">
+
+    <rect width="520"
+          height="360"
+          rx="30"
+          fill="#eef7ff"/>
+
+    <!-- Decorative circles -->
+    <circle cx="80"
+            cy="70"
+            r="45"
+            fill="#d9f2f0"/>
+
+    <circle cx="450"
+            cy="290"
+            r="50"
+            fill="#dcecff"/>
+
+    <!-- Calendar -->
+    <rect x="270"
+          y="70"
+          width="190"
+          height="210"
+          rx="18"
+          fill="#ffffff"
+          stroke="#1f5f99"
+          stroke-width="5"/>
+
+    <rect x="270"
+          y="70"
+          width="190"
+          height="52"
+          rx="16"
+          fill="#1f5f99"/>
+
+    <circle cx="315"
+            cy="96"
+            r="7"
+            fill="#ffffff"/>
+
+    <circle cx="415"
+            cy="96"
+            r="7"
+            fill="#ffffff"/>
+
+    <!-- Calendar rows -->
+    <rect x="295"
+          y="145"
+          width="35"
+          height="30"
+          rx="5"
+          fill="#dcecff"/>
+
+    <rect x="347"
+          y="145"
+          width="35"
+          height="30"
+          rx="5"
+          fill="#d9f2f0"/>
+
+    <rect x="399"
+          y="145"
+          width="35"
+          height="30"
+          rx="5"
+          fill="#dcecff"/>
+
+    <rect x="295"
+          y="192"
+          width="35"
+          height="30"
+          rx="5"
+          fill="#d9f2f0"/>
+
+    <rect x="347"
+          y="192"
+          width="35"
+          height="30"
+          rx="5"
+          fill="#2e9d8f"/>
+
+    <rect x="399"
+          y="192"
+          width="35"
+          height="30"
+          rx="5"
+          fill="#d9f2f0"/>
+
+    <!-- Doctor head -->
+    <circle cx="145"
+            cy="115"
+            r="45"
+            fill="#f2c9a5"/>
+
+    <!-- Hair -->
+    <path d="M105 112
+             C105 65 185 60 188 110
+             C170 90 130 88 105 112Z"
+          fill="#243b53"/>
+
+    <!-- Body -->
+    <path d="M75 280
+             C78 200 105 170 145 170
+             C190 170 215 205 220 280Z"
+          fill="#ffffff"
+          stroke="#1f5f99"
+          stroke-width="5"/>
+
+    <!-- Shirt -->
+    <path d="M124 175
+             L145 205
+             L167 175
+             L175 280
+             L115 280Z"
+          fill="#dcecff"/>
+
+    <!-- Stethoscope -->
+    <path d="M110 195
+             C105 235 125 245 145 245
+             C165 245 180 230 178 205"
+          fill="none"
+          stroke="#2e9d8f"
+          stroke-width="6"
+          stroke-linecap="round"/>
+
+    <circle cx="178"
+            cy="205"
+            r="8"
+            fill="#2e9d8f"/>
+
+    <!-- Medical cross -->
+    <rect x="188"
+          y="220"
+          width="10"
+          height="38"
+          rx="3"
+          fill="#2e9d8f"/>
+
+    <rect x="174"
+          y="234"
+          width="38"
+          height="10"
+          rx="3"
+          fill="#2e9d8f"/>
+
+    <!-- Check mark -->
+    <circle cx="410"
+            cy="265"
+            r="28"
+            fill="#2e9d8f"/>
+
+    <path d="M396 265
+             L407 276
+             L426 252"
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="7"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+</svg>

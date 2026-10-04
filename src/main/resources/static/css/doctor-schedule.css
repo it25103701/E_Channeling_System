@@ -1,0 +1,879 @@
+/* =========================================
+   DOCTOR SCHEDULE & SHIFT SLOT MANAGEMENT
+   PROFESSIONAL COLOURFUL UI
+   ========================================= */
+
+
+/* =========================================
+   PAGE BACKGROUND
+   ========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+
+    font-family:
+            "Segoe UI",
+            Tahoma,
+            Geneva,
+            Verdana,
+            sans-serif;
+
+    color: #1e293b;
+
+    background:
+            radial-gradient(
+                    circle at 10% 15%,
+                    rgba(56, 189, 248, 0.30) 0%,
+                    transparent 30%
+            ),
+
+            radial-gradient(
+                    circle at 90% 20%,
+                    rgba(168, 85, 247, 0.22) 0%,
+                    transparent 28%
+            ),
+
+            radial-gradient(
+                    circle at 80% 85%,
+                    rgba(45, 212, 191, 0.28) 0%,
+                    transparent 30%
+            ),
+
+            radial-gradient(
+                    circle at 15% 85%,
+                    rgba(244, 114, 182, 0.18) 0%,
+                    transparent 28%
+            ),
+
+            linear-gradient(
+                    135deg,
+                    #e0f2fe 0%,
+                    #eef2ff 30%,
+                    #fdf2f8 65%,
+                    #ecfdf5 100%
+            );
+
+    background-attachment: fixed;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+   ========================================= */
+
+.container {
+    width: 96%;
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding:
+            35px
+            20px
+            55px;
+
+    position: relative;
+    z-index: 1;
+}
+
+
+/* =========================================
+   PAGE TITLE
+   ========================================= */
+
+.page-title {
+    margin-bottom: 25px;
+
+    text-align: center;
+
+    color: #0f4c81;
+
+    font-size: 34px;
+    font-weight: 800;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* =========================================
+   CARDS
+   ========================================= */
+
+.card {
+    margin-bottom: 28px;
+
+    padding: 28px;
+
+    background:
+            rgba(
+                    255,
+                    255,
+                    255,
+                    0.94
+            );
+
+    border:
+            1px solid
+            rgba(
+                    255,
+                    255,
+                    255,
+                    0.85
+            );
+
+    border-radius: 18px;
+
+    box-shadow:
+            0 12px 35px
+            rgba(
+                    15,
+                    76,
+                    129,
+                    0.12
+            );
+
+    backdrop-filter:
+            blur(10px);
+}
+
+
+/* =========================================
+   CARD HEADINGS
+   ========================================= */
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+
+    padding-left: 14px;
+
+    color: #164e75;
+
+    font-size: 24px;
+    font-weight: 750;
+
+    border-left:
+            6px solid
+            #2e9d8f;
+}
+
+
+/* =========================================
+   FORM GRID
+   ========================================= */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(
+                    2,
+                    minmax(
+                            0,
+                            1fr
+                    )
+            );
+
+    gap:
+            22px
+            26px;
+}
+
+
+/* =========================================
+   FORM GROUP
+   ========================================= */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================
+   LABELS
+   ========================================= */
+
+.form-group label {
+    margin-bottom: 8px;
+
+    color: #1e3a5f;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   INPUTS + SELECT
+   ========================================= */
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    min-height: 45px;
+
+    padding:
+            11px
+            13px;
+
+    border:
+            1px solid
+            #cbd5e1;
+
+    border-radius: 9px;
+
+    background-color:
+            rgba(
+                    255,
+                    255,
+                    255,
+                    0.97
+            );
+
+    color: #1e293b;
+
+    font-size: 14px;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+}
+
+
+/* =========================================
+   INPUT FOCUS
+   ========================================= */
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #2186c4;
+
+    box-shadow:
+            0 0 0 4px
+            rgba(
+                    33,
+                    134,
+                    196,
+                    0.12
+            );
+
+    outline: none;
+
+    transform:
+            translateY(-1px);
+}
+
+
+/* =========================================
+   INPUT PLACEHOLDER
+   ========================================= */
+
+.form-group input::placeholder {
+    color: #94a3b8;
+}
+
+
+/* =========================================
+   FIELD HELP
+   ========================================= */
+
+.field-help {
+    margin-top: 6px;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   ERROR MESSAGE
+   ========================================= */
+
+.error-message {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #dc2626;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   FORM ACTIONS
+   ========================================= */
+
+.form-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 26px;
+}
+
+
+/* =========================================
+   BUTTON BASE
+   ========================================= */
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 38px;
+
+    padding:
+            9px
+            15px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease,
+            opacity 0.18s ease;
+}
+
+
+/* =========================================
+   BUTTON HOVER
+   ========================================= */
+
+.btn:hover {
+    transform:
+            translateY(-2px);
+
+    box-shadow:
+            0 7px 16px
+            rgba(
+                    15,
+                    23,
+                    42,
+                    0.14
+            );
+
+    opacity: 0.94;
+}
+
+
+/* =========================================
+   PRIMARY BUTTON
+   ========================================= */
+
+.btn-primary {
+    color: white;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #0f6fa8,
+                    #1496bb,
+                    #2e9d8f
+            );
+}
+
+
+/* =========================================
+   SECONDARY BUTTON
+   ========================================= */
+
+.btn-secondary {
+    color: #334155;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #e2e8f0,
+                    #f1f5f9
+            );
+
+    border:
+            1px solid
+            #cbd5e1;
+}
+
+
+/* =========================================
+   EDIT BUTTON
+   ========================================= */
+
+.btn-edit {
+    color: white;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #3b82f6
+            );
+}
+
+
+/* =========================================
+   CANCEL / REASSIGN BUTTON
+   ========================================= */
+
+.btn-cancel {
+    color: white;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #f59e0b,
+                    #f97316
+            );
+}
+
+
+/* =========================================
+   DELETE BUTTON
+   ========================================= */
+
+.btn-delete {
+    color: white;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #dc2626,
+                    #ef4444
+            );
+}
+
+
+/* =========================================
+   TABLE WRAPPER
+   ========================================= */
+
+.table-responsive {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border-radius: 12px;
+}
+
+
+/* =========================================
+   SCHEDULE TABLE
+   ========================================= */
+
+.schedule-table {
+    width: 100%;
+
+    min-width: 1180px;
+
+    border-collapse: collapse;
+
+    overflow: hidden;
+
+    background-color:
+            rgba(
+                    255,
+                    255,
+                    255,
+                    0.97
+            );
+
+    border-radius: 12px;
+
+    box-shadow:
+            0 6px 18px
+            rgba(
+                    15,
+                    23,
+                    42,
+                    0.05
+            );
+}
+
+
+/* =========================================
+   TABLE HEADER
+   ========================================= */
+
+.schedule-table thead {
+    color: white;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    #0f4c81,
+                    #1f6fa8,
+                    #2e9d8f
+            );
+}
+
+
+.schedule-table th {
+    padding:
+            14px
+            12px;
+
+    text-align: left;
+
+    font-size: 13px;
+    font-weight: 750;
+
+    white-space: nowrap;
+
+    border-bottom:
+            1px solid
+            rgba(
+                    255,
+                    255,
+                    255,
+                    0.2
+            );
+}
+
+
+/* =========================================
+   TABLE CELLS
+   ========================================= */
+
+.schedule-table td {
+    padding:
+            13px
+            12px;
+
+    color: #334155;
+
+    font-size: 13px;
+
+    vertical-align: middle;
+
+    border-bottom:
+            1px solid
+            #e2e8f0;
+}
+
+
+/* =========================================
+   TABLE ROW HOVER
+   ========================================= */
+
+.schedule-table tbody tr {
+    transition:
+            background-color 0.18s ease,
+            transform 0.18s ease;
+}
+
+
+.schedule-table tbody tr:hover {
+    background:
+            linear-gradient(
+                    90deg,
+                    #eff9ff,
+                    #f0fdfa
+            );
+
+    transform:
+            scale(1.001);
+}
+
+
+/* =========================================
+   STATUS BADGE
+   ========================================= */
+
+.status {
+    display: inline-block;
+
+    min-width: 88px;
+
+    padding:
+            7px
+            10px;
+
+    border-radius: 999px;
+
+    text-align: center;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================
+   AVAILABLE STATUS
+   ========================================= */
+
+.status-available {
+    color: #065f46;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #d1fae5,
+                    #a7f3d0
+            );
+
+    border:
+            1px solid
+            #6ee7b7;
+}
+
+
+/* =========================================
+   BLOCKED STATUS
+   ========================================= */
+
+.status-blocked {
+    color: #92400e;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #fef3c7,
+                    #fde68a
+            );
+
+    border:
+            1px solid
+            #fcd34d;
+}
+
+
+/* =========================================
+   CANCELLED STATUS
+   ========================================= */
+
+.status-cancelled {
+    color: #991b1b;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #fee2e2,
+                    #fecaca
+            );
+
+    border:
+            1px solid
+            #fca5a5;
+}
+
+
+/* =========================================
+   ACTION BUTTON CONTAINER
+   ========================================= */
+
+.action-buttons {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+
+/* =========================================
+   EMPTY TABLE MESSAGE
+   ========================================= */
+
+.empty-message {
+    padding: 30px !important;
+
+    text-align: center;
+
+    color: #64748b !important;
+
+    font-size: 14px !important;
+
+    font-style: italic;
+}
+
+
+/* =========================================
+   REASSIGNMENT RESULT CARD
+   ========================================= */
+
+.reassignment-message {
+    border-left:
+            6px solid
+            #2e9d8f;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(
+                            236,
+                            253,
+                            245,
+                            0.97
+                    ),
+                    rgba(
+                            240,
+                            249,
+                            255,
+                            0.97
+                    )
+            );
+}
+
+
+.reassignment-message strong {
+    color: #0f766e;
+}
+
+
+.reassignment-message p {
+    margin-bottom: 0;
+
+    color: #334155;
+}
+
+
+/* =========================================
+   SCROLLBAR
+   ========================================= */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+    background: #e2e8f0;
+}
+
+
+::-webkit-scrollbar-thumb {
+    background:
+            linear-gradient(
+                    #1f6fa8,
+                    #2e9d8f
+            );
+
+    border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    background:
+            linear-gradient(
+                    #0f4c81,
+                    #26877d
+            );
+}
+
+
+/* =========================================
+   RESPONSIVE - TABLET
+   ========================================= */
+
+@media (max-width: 900px) {
+
+    .container {
+        width: 97%;
+
+        padding:
+                25px
+                12px
+                45px;
+    }
+
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .card {
+        padding: 22px;
+    }
+
+
+    .page-title {
+        font-size: 29px;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE - MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 100%;
+
+        padding:
+                16px
+                10px
+                35px;
+    }
+
+
+    .card {
+        padding: 17px;
+
+        border-radius: 13px;
+    }
+
+
+    .card h2 {
+        font-size: 20px;
+    }
+
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+
+    .action-buttons {
+        min-width: 150px;
+    }
+
+
+    .btn {
+        width: 100%;
+    }
+
+
+    .page-title {
+        font-size: 25px;
+    }
+}
