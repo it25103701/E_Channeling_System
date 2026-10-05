@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller managing notification broadcasts and direct communications.
+ * Provides endpoints to list, create, update, and remove notifications.
+ */
 @Controller
 @RequestMapping("/notifications")
 public class NotificationController {
@@ -30,12 +34,30 @@ public class NotificationController {
     }
 
     // =========================================
-    // CREATE NOTIFICATION (POST /notifications/send)
+    // CREATE / SAVE NOTIFICATION (POST /notifications/save, /notifications/send)
     // =========================================
-    @PostMapping("/send")
-    public String sendNotification(@ModelAttribute("notification") Notification notification) {
+    @PostMapping({"/save", "/send"})
+    public String saveNotification(@ModelAttribute("notification") Notification notification) {
         notificationService.createNotification(notification);
         return "redirect:/notifications";
+    }
+
+    // =========================================
+    // EDIT NOTIFICATION VIEW (GET /notifications/edit/{id})
+    // =========================================
+    @GetMapping("/edit/{id}")
+    public String editNotification(@PathVariable("id") Long id, Model model) {
+        List<Notification> notifications = notificationService.getAllNotifications();
+        model.addAttribute("notifications", notifications);
+
+        // Find existing record and bind to form, otherwise fallback to empty entity
+        Notification target = notifications.stream()
+                .filter(n -> n.getId() != null && n.getId().equals(id))
+                .findFirst()
+                .orElse(new Notification());
+
+        model.addAttribute("notification", target);
+        return "notifications";
     }
 
     // =========================================
