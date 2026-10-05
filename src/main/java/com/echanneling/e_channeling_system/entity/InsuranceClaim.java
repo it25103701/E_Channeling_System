@@ -1,4 +1,4 @@
-package com.echanneling.e_channeling_system;
+package com.echanneling.e_channeling_system.entity;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.*;

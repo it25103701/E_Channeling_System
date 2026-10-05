@@ -1,6 +1,6 @@
 package com.echanneling.e_channeling_system.repository;
 
-import com.echanneling.e_channeling_system.InsuranceClaim;
+import com.echanneling.e_channeling_system.entity.InsuranceClaim;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

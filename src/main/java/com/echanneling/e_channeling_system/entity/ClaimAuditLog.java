@@ -1,4 +1,4 @@
-package com.echanneling.e_channeling_system;
+package com.echanneling.e_channeling_system.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;

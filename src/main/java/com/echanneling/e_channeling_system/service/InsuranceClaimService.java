@@ -1,9 +1,10 @@
-package com.echanneling.e_channeling_system;
+package com.echanneling.e_channeling_system.service;
 
+import com.echanneling.e_channeling_system.entity.InsuranceClaim;
 import com.echanneling.e_channeling_system.dto.AppointmentResponse;
+import com.echanneling.e_channeling_system.entity.ClaimAuditLog;
 import com.echanneling.e_channeling_system.repository.ClaimAuditLogRepository;
 import com.echanneling.e_channeling_system.repository.InsuranceClaimRepository;
-import com.echanneling.e_channeling_system.service.AppointmentService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
