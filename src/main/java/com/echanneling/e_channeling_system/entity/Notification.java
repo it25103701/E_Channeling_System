@@ -17,15 +17,19 @@ public class Notification {
     private String title;
     private String message;
     private String type;
+    private String recipientType;
+    private String patientId;
     private String preferenceRules;
 
     public Notification() {
     }
 
-    public Notification(String title, String message, String type, String preferenceRules) {
+    public Notification(String title, String message, String type, String recipientType, String patientId, String preferenceRules) {
         this.title = title;
         this.message = message;
         this.type = type;
+        this.recipientType = recipientType;
+        this.patientId = patientId;
         this.preferenceRules = preferenceRules;
     }
 
@@ -59,6 +63,22 @@ public class Notification {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getRecipientType() {
+        return recipientType;
+    }
+
+    public void setRecipientType(String recipientType) {
+        this.recipientType = recipientType;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public String getPreferenceRules() {
