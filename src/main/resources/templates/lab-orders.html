@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediBook ERP - Clinical Laboratory & Diagnostics</title>
+    <title>MediBook ERP - Clinical Laboratory &amp; Diagnostics</title>
     <!-- Fonts & Bootstrap 5 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,16 +85,16 @@
 <!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="fw-bold mb-1 text-dark">Clinical Diagnostic & Laboratory Subsystem</h4>
-        <div class="text-muted small">Use Case 06 &bull; Enterprise Test Requisitioning & Clinical Urgency Management</div>
+        <h4 class="fw-bold mb-1 text-dark">Clinical Diagnostic &amp; Laboratory Subsystem</h4>
+        <div class="text-muted small">Use Case 06 &bull; Enterprise Test Requisitioning &amp; Clinical Urgency Management</div>
     </div>
     <div class="d-flex gap-2">
-            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
-                <i class="fas fa-circle text-success me-1" style="font-size: 0.55rem;"></i> System Online
-            </span>
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+            <i class="fas fa-circle text-success me-1" style="font-size: 0.55rem;"></i> System Online
+        </span>
         <span class="badge bg-primary text-white px-3 py-2">
-                <i class="fas fa-user-md me-1"></i> Lab Specialist
-            </span>
+            <i class="fas fa-user-md me-1"></i> Lab Specialist
+        </span>
     </div>
 </div>
 
@@ -148,23 +148,36 @@
     </div>
 </div>
 
-<!-- Diagnostic Requisition Form -->
+<!-- Diagnostic Requisition Form (Create / Update Mode) -->
 <div class="surface-card p-4">
     <h6 class="fw-bold mb-3 text-dark">
-        <i class="fas fa-plus-circle text-primary me-2"></i>Issue Diagnostic Test Requisition
+        <i class="fas fa-plus-circle text-primary me-2"></i>
+        <span th:text="${editingOrder != null ? 'Update Diagnostic Requisition #LAB-' + editingOrder.id : 'Issue Diagnostic Test Requisition'}">
+            Issue Diagnostic Test Requisition
+        </span>
     </h6>
-    <form th:action="@{/lab-orders/create}" method="post" id="requisitionForm" class="row g-3 needs-validation" novalidate>
+
+    <form th:action="${editingOrder != null ? '/lab-orders/update/' + editingOrder.id : '/lab-orders/create'}"
+          method="post"
+          id="requisitionForm"
+          class="row g-3 needs-validation"
+          novalidate>
 
         <!-- 1. Diagnostic Test Category -->
         <div class="col-md-4">
             <label class="form-label">Diagnostic Test Category <span class="text-danger">*</span></label>
             <select name="testCategory" id="testCategorySelect" class="form-select" required>
-                <option value="" disabled selected>Select category...</option>
-                <option value="Full Blood Count (FBC)" data-dept="Pathology / Hematology">Full Blood Count (FBC)</option>
-                <option value="Lipid Profile" data-dept="Clinical Biochemistry">Lipid Profile</option>
-                <option value="12-Lead ECG" data-dept="Cardiology Diagnostics">12-Lead ECG</option>
-                <option value="Chest X-Ray" data-dept="Radiology & Imaging">Chest X-Ray</option>
-                <option value="Ultrasound Abdomen" data-dept="Sonography Unit">Ultrasound Abdomen</option>
+                <option value="" disabled th:selected="${editingOrder == null}">Select category...</option>
+                <option value="Full Blood Count (FBC)" data-dept="Pathology / Hematology"
+                        th:selected="${editingOrder != null && editingOrder.testCategory == 'Full Blood Count (FBC)'}">Full Blood Count (FBC)</option>
+                <option value="Lipid Profile" data-dept="Clinical Biochemistry"
+                        th:selected="${editingOrder != null && editingOrder.testCategory == 'Lipid Profile'}">Lipid Profile</option>
+                <option value="12-Lead ECG" data-dept="Cardiology Diagnostics"
+                        th:selected="${editingOrder != null && editingOrder.testCategory == '12-Lead ECG'}">12-Lead ECG</option>
+                <option value="Chest X-Ray" data-dept="Radiology &amp; Imaging"
+                        th:selected="${editingOrder != null && editingOrder.testCategory == 'Chest X-Ray'}">Chest X-Ray</option>
+                <option value="Ultrasound Abdomen" data-dept="Sonography Unit"
+                        th:selected="${editingOrder != null && editingOrder.testCategory == 'Ultrasound Abdomen'}">Ultrasound Abdomen</option>
             </select>
             <div class="invalid-feedback">Diagnostic category selection is required.</div>
         </div>
@@ -172,7 +185,9 @@
         <!-- 2. Clinical Department -->
         <div class="col-md-4">
             <label class="form-label">Clinical Department <span class="text-danger">*</span></label>
-            <input type="text" name="department" id="departmentInput" class="form-control" placeholder="Enter department name" required>
+            <input type="text" name="department" id="departmentInput" class="form-control"
+                   placeholder="Enter department name"
+                   th:value="${editingOrder != null ? editingOrder.department : ''}" required>
             <div class="invalid-feedback">Department designation is required.</div>
         </div>
 
@@ -180,10 +195,10 @@
         <div class="col-md-4">
             <label class="form-label">Clinical Urgency <span class="text-danger">*</span></label>
             <select name="urgencyLevel" id="urgencySelect" class="form-select" required>
-                <option value="" disabled selected>Select urgency level...</option>
-                <option value="ROUTINE">ROUTINE (Standard 48h)</option>
-                <option value="URGENT">URGENT (Expedited 24h)</option>
-                <option value="STAT">STAT (Emergency 24h immediate)</option>
+                <option value="" disabled th:selected="${editingOrder == null}">Select urgency level...</option>
+                <option value="ROUTINE" th:selected="${editingOrder != null && editingOrder.urgencyLevel == 'ROUTINE'}">ROUTINE (Standard 48h)</option>
+                <option value="URGENT" th:selected="${editingOrder != null && editingOrder.urgencyLevel == 'URGENT'}">URGENT (Expedited 24h)</option>
+                <option value="STAT" th:selected="${editingOrder != null && editingOrder.urgencyLevel == 'STAT'}">STAT (Emergency 24h immediate)</option>
             </select>
             <div class="invalid-feedback">Urgency priority must be selected.</div>
         </div>
@@ -191,22 +206,28 @@
         <!-- 4. Requisition Date -->
         <div class="col-md-4">
             <label class="form-label">Requisition Date <span class="text-danger">*</span></label>
-            <input type="date" name="orderDate" id="orderDateInput" class="form-control" required>
+            <input type="date" name="orderDate" id="orderDateInput" class="form-control"
+                   th:value="${editingOrder != null ? editingOrder.orderDate : ''}" required>
             <div class="invalid-feedback">Valid order date required (cannot be in the past).</div>
         </div>
 
         <!-- 5. Expected Completion Date -->
         <div class="col-md-4">
             <label class="form-label">Expected Completion Date <span class="text-danger">*</span></label>
-            <input type="date" name="expectedDate" id="expectedDateInput" class="form-control" required>
+            <input type="date" name="expectedDate" id="expectedDateInput" class="form-control"
+                   th:value="${editingOrder != null ? editingOrder.expectedDate : ''}" required>
             <div class="invalid-feedback">Expected result date is required and cannot precede order date.</div>
         </div>
 
-        <!-- Submit Button -->
-        <div class="col-md-4 d-flex align-items-end">
+        <!-- Submit & Cancel Buttons -->
+        <div class="col-md-4 d-flex align-items-end gap-2">
             <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
-                <i class="fas fa-file-medical me-1"></i> Place Diagnostic Order
+                <i class="fas fa-file-medical me-1"></i>
+                <span th:text="${editingOrder != null ? 'Update Diagnostic Order' : 'Place Diagnostic Order'}">Place Diagnostic Order</span>
             </button>
+            <a th:if="${editingOrder != null}" th:href="@{/lab-orders}" class="btn btn-secondary py-2 px-3 fw-semibold">
+                Cancel
+            </a>
         </div>
     </form>
 </div>
@@ -255,14 +276,22 @@
                 </td>
                 <td class="text-end pe-3">
                     <div class="d-inline-flex gap-2 align-items-center">
+                        <!-- EDIT BUTTON -->
+                        <a th:href="@{'/lab-orders/edit/' + ${order.id}}" class="btn btn-sm btn-outline-secondary" title="Edit Requisition Details">
+                            <i class="fas fa-pen-to-square"></i>
+                        </a>
+
+                        <!-- ADVANCE STATUS BUTTON -->
                         <form th:if="${order.status != 'COMPLETED'}" th:action="@{'/lab-orders/advance-status/' + ${order.id}}" method="post" class="d-inline">
                             <button type="submit" class="btn btn-sm btn-outline-primary" title="Advance Lifecycle Status">
                                 <i class="fas fa-step-forward"></i>
                             </button>
                         </form>
                         <span th:if="${order.status == 'COMPLETED'}" class="badge bg-light text-muted border py-1 px-2" title="Order Finalized">
-                                    <i class="fas fa-check-double text-success"></i> Done
-                                </span>
+                            <i class="fas fa-check-double text-success"></i> Done
+                        </span>
+
+                        <!-- DELETE BUTTON -->
                         <form th:action="@{'/lab-orders/delete/' + ${order.id}}" method="post" class="d-inline" onsubmit="return confirm('Revoke this diagnostic requisition?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Revoke Order">
                                 <i class="fas fa-trash-can"></i>
@@ -294,7 +323,8 @@
         const expectedDateInput = document.getElementById('expectedDateInput');
         const todayStr = new Date().toISOString().split('T')[0];
 
-        if (orderDateInput) {
+        // Apply minimum constraint only if creating new (don't break viewing older historical records)
+        if (orderDateInput && !orderDateInput.value) {
             orderDateInput.min = todayStr;
         }
 
@@ -333,8 +363,8 @@
                     urgencySelect.setCustomValidity("");
                 }
 
-                if (!orderDateInput.value || orderDateInput.value < todayStr) {
-                    orderDateInput.setCustomValidity("Requisition date cannot be empty or in the past.");
+                if (!orderDateInput.value) {
+                    orderDateInput.setCustomValidity("Requisition date cannot be empty.");
                     isValid = false;
                 } else {
                     orderDateInput.setCustomValidity("");
