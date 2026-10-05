@@ -99,3 +99,36 @@ org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
 	at com.echanneling.e_channeling_system.EChannelingSystemApplication.main(EChannelingSystemApplication.java:10)
+2026-10-05 10:08:16.908200+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTOR_ID" not found; SQL statement:
+SELECT *
+FROM DOCTOR_ID [42102-224]
+2026-10-05 10:08:26.696637+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTOR_ID" not found; SQL statement:
+SELECT *
+FROM DOCTOR_ID [42102-224]
+2026-10-05 10:08:50.207786+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTOR" not found; SQL statement:
+SELECT *
+FROM DOCTOR [42102-224]
+2026-10-05 10:08:57.025774+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTOR" not found; SQL statement:
+SELECT *
+FROM DOCTOR [42102-224]
+2026-10-05 10:09:34.227486+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTOR" not found; SQL statement:
+SELECT * 
+FROM DOCTOR [42102-224]
+2026-10-05 10:10:21.879494+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTOR" not found; SQL statement:
+SELECT * 
+FROM DOCTOR [42102-224]
+2026-10-05 10:12:34.740571+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "SCHEDULE_ID" not found; SQL statement:
+SELECT*
+FROM SCHEDULE_ID 
+WHERE SCHEDULE_ID =1 [42102-224]
+2026-10-05 10:47:10.794484+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DOCTORS" not found; SQL statement:
+SELECT *
+FROM DOCTORS [42102-224]
