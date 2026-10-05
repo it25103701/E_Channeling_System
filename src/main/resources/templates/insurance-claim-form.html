@@ -33,34 +33,50 @@
 <div class="surface-card p-4">
     <h6 class="fw-bold mb-3 text-dark"><i class="fas fa-shield-halved text-primary me-2"></i>Submit Pre-Authorisation Claim</h6>
     <form th:action="@{/insurance/claim}" th:object="${claim}" method="post" class="row g-3">
+
         <div class="col-md-6">
             <label class="form-label">Patient name</label>
-            <input type="text" class="form-control" th:field="*{patientName}" placeholder="Filled in automatically from the appointment" readonly>
+            <input type="text" class="form-control" name="patientName" id="patientName"
+                   th:value="${claim != null ? claim.patientName : ''}"
+                   placeholder="Filled in automatically from the appointment" readonly>
         </div>
+
+        <!-- LINE 42: Decoupled from th:field to avoid SpringInputGeneralFieldTagProcessor mismatch -->
         <div class="col-md-6">
             <label class="form-label">Appointment ID <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" th:field="*{appointmentId}" required>
+            <input type="number" class="form-control" id="appointmentId" name="appointmentId"
+                   placeholder="e.g. 1" required>
         </div>
+
         <div class="col-md-6">
             <label class="form-label">Insurer name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" th:field="*{insurerName}" required>
+            <input type="text" class="form-control" id="insurerName" name="insurerName"
+                   placeholder="e.g. Ceylinco Life / Sri Lanka Insurance" required>
         </div>
+
         <div class="col-md-6">
             <label class="form-label">Policy number <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" th:field="*{policyNumber}" required>
+            <input type="text" class="form-control" id="policyNumber" name="policyNumber"
+                   placeholder="e.g. POL-99201" required>
         </div>
+
         <div class="col-md-4">
             <label class="form-label">Policy expiry date <span class="text-danger">*</span></label>
-            <input type="date" class="form-control" th:field="*{policyExpiryDate}" required>
+            <input type="date" class="form-control" id="policyExpiryDate" name="policyExpiryDate" required>
         </div>
+
         <div class="col-md-4">
             <label class="form-label">Remaining deductible balance (Rs.) <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" min="0" class="form-control" th:field="*{deductibleBalance}" required>
+            <input type="number" step="0.01" min="0" class="form-control" id="deductibleBalance" name="deductibleBalance"
+                   placeholder="0.00" required>
         </div>
+
         <div class="col-md-4">
             <label class="form-label">Channeling fee (Rs.) <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" min="0" class="form-control" th:field="*{channelingFee}" required>
+            <input type="number" step="0.01" min="0" class="form-control" id="channelingFee" name="channelingFee"
+                   placeholder="2500.00" required>
         </div>
+
         <div class="col-12">
             <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
                 <i class="fas fa-file-medical me-1"></i> Submit claim
@@ -69,5 +85,6 @@
     </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
