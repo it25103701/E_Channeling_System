@@ -1,9 +1,11 @@
 package com.echanneling.e_channeling_system.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Immutable;
 import java.time.LocalDateTime;
 
 @Entity
+@Immutable
 @Table(name = "claim_audit_logs")
 public class ClaimAuditLog {
 
@@ -13,57 +15,42 @@ public class ClaimAuditLog {
 
     private Long claimId;
     private String action;
-    private String details;
-    private LocalDateTime timestamp;
+    private String reason;
+    private String actedBy;
+    private LocalDateTime actionTime;
 
-    public ClaimAuditLog() {
-        this.timestamp = LocalDateTime.now();
+    protected ClaimAuditLog() {
     }
 
-    public ClaimAuditLog(Long claimId, String action, String details) {
+    public ClaimAuditLog(Long claimId, String action, String reason, String actedBy) {
         this.claimId = claimId;
         this.action = action;
-        this.details = details;
-        this.timestamp = LocalDateTime.now();
+        this.reason = reason;
+        this.actedBy = actedBy;
+        this.actionTime = LocalDateTime.now();
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getClaimId() {
         return claimId;
-    }
-
-    public void setClaimId(Long claimId) {
-        this.claimId = claimId;
     }
 
     public String getAction() {
         return action;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public String getReason() {
+        return reason;
     }
 
-    public String getDetails() {
-        return details;
+    public String getActedBy() {
+        return actedBy;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public LocalDateTime getActionTime() {
+        return actionTime;
     }
 }

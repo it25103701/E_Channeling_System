@@ -1,8 +1,11 @@
-package com.echanneling.e_channeling_system.pattern.factory;
+package com.echanneling.e_channeling_system.Observer;
 
 import com.echanneling.e_channeling_system.entity.Notification;
 
 public class NotificationFactory {
+
+    private NotificationFactory() {
+    }
 
     // Factory method for creating direct recipient notifications
     public static Notification createDirectNotification(String title, String message, String type, String patientId) {
