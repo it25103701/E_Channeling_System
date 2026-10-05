@@ -1,13 +1,13 @@
 package com.echanneling.e_channeling_system.controller;
 
 import com.echanneling.e_channeling_system.entity.LabOrder;
-import com.echanneling.e_channeling_system.repository.AppointmentRepository;
-import com.echanneling.e_channeling_system.repository.LabOrderRepository;
 import com.echanneling.e_channeling_system.pattern.factory.DiagnosticTest;
 import com.echanneling.e_channeling_system.pattern.factory.DiagnosticTestFactory;
 import com.echanneling.e_channeling_system.pattern.strategy.OrderProcessingContext;
 import com.echanneling.e_channeling_system.pattern.strategy.RoutinePriorityStrategy;
 import com.echanneling.e_channeling_system.pattern.strategy.StatUrgentPriorityStrategy;
+import com.echanneling.e_channeling_system.repository.AppointmentRepository;
+import com.echanneling.e_channeling_system.repository.LabOrderRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +15,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Controller managing Diagnostic Test Requisitions and Laboratory Workflows (UC-06).
+ * Integrates Factory and Strategy design patterns to enforce department routing,
+ * turnaround calculation, and clinical lifecycle progression.
+ */
 @Controller
 @RequestMapping("/lab-orders")
 public class LabOrderController {
@@ -32,15 +38,37 @@ public class LabOrderController {
         this.appointmentRepository = appointmentRepository;
     }
 
+    // =========================================================================
     // READ: View all active diagnostic orders
+    // =========================================================================
     @GetMapping
     public String getAllLabOrders(Model model) {
         model.addAttribute("labOrders", labOrderRepository.findAll());
         model.addAttribute("appointmentCount", appointmentRepository.count());
+        model.addAttribute("editingOrder", null);
         return "lab-orders";
     }
 
-    // CREATE: Place a new lab diagnostic order with strict non-null validation
+    // =========================================================================
+    // READ / EDIT: Load selected requisition into edit mode
+    // =========================================================================
+    @GetMapping("/edit/{id}")
+    public String showEditOrderForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<LabOrder> orderOpt = labOrderRepository.findById(id);
+        if (orderOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: Lab order #LAB-" + id + " not found.");
+            return "redirect:/lab-orders";
+        }
+
+        model.addAttribute("labOrders", labOrderRepository.findAll());
+        model.addAttribute("appointmentCount", appointmentRepository.count());
+        model.addAttribute("editingOrder", orderOpt.get());
+        return "lab-orders";
+    }
+
+    // =========================================================================
+    // CREATE: Place a new lab diagnostic order with strict validation
+    // =========================================================================
     @PostMapping("/create")
     public String createLabOrder(@RequestParam String testCategory,
                                  @RequestParam String department,
@@ -49,70 +77,15 @@ public class LabOrderController {
                                  @RequestParam String expectedDate,
                                  RedirectAttributes redirectAttributes) {
 
-        // 1. Mandatory Diagnostic Category Validation
-        if (testCategory == null || testCategory.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Diagnostic test category cannot be left blank.");
+        String validationError = validateOrderPayload(testCategory, department, urgencyLevel, orderDate, expectedDate, true);
+        if (validationError != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationError);
             return "redirect:/lab-orders";
         }
 
-        // 2. Mandatory Department Validation
-        if (department == null || department.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Clinical department designation is mandatory.");
-            return "redirect:/lab-orders";
-        }
-
-        // 3. Mandatory Urgency Level Validation
-        String normalizedUrgency = urgencyLevel != null ? urgencyLevel.trim().toUpperCase() : "";
-        if (!ALLOWED_URGENCIES.contains(normalizedUrgency)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Urgency level must be ROUTINE, URGENT, or STAT.");
-            return "redirect:/lab-orders";
-        }
-
-        // 4. Mandatory Requisition Order Date Validation
-        if (orderDate == null || orderDate.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Requisition order date is required.");
-            return "redirect:/lab-orders";
-        }
-
-        LocalDate today = LocalDate.now();
-        LocalDate parsedOrderDate;
-        try {
-            parsedOrderDate = LocalDate.parse(orderDate.trim());
-        } catch (DateTimeParseException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Invalid requisition date format (YYYY-MM-DD expected).");
-            return "redirect:/lab-orders";
-        }
-
-        if (parsedOrderDate.isBefore(today)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Guard: Requisition date cannot be set in the past.");
-            return "redirect:/lab-orders";
-        }
-
-        // 5. Mandatory Expected Delivery Date Validation
-        if (expectedDate == null || expectedDate.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Expected result completion date is required.");
-            return "redirect:/lab-orders";
-        }
-
-        LocalDate parsedExpectedDate;
-        try {
-            parsedExpectedDate = LocalDate.parse(expectedDate.trim());
-        } catch (DateTimeParseException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation Error: Invalid expected completion date format.");
-            return "redirect:/lab-orders";
-        }
-
-        // Chronological Sequence Check
-        if (parsedExpectedDate.isBefore(parsedOrderDate)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Chronological Error: Expected result date cannot precede the order date.");
-            return "redirect:/lab-orders";
-        }
-
-        // STAT Urgency Protocol (Max 24h turnaround)
-        if ("STAT".equals(normalizedUrgency) && parsedExpectedDate.isAfter(parsedOrderDate.plusDays(1))) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Clinical Protocol Alert: STAT (Emergency) orders cannot exceed a 24-hour turnaround window.");
-            return "redirect:/lab-orders";
-        }
+        LocalDate parsedOrderDate = LocalDate.parse(orderDate.trim());
+        LocalDate parsedExpectedDate = LocalDate.parse(expectedDate.trim());
+        String normalizedUrgency = urgencyLevel.trim().toUpperCase();
 
         // Factory & Strategy Pattern Integration
         DiagnosticTest diagnosticTest = DiagnosticTestFactory.createTest(testCategory.trim());
@@ -143,7 +116,49 @@ public class LabOrderController {
         return "redirect:/lab-orders";
     }
 
+    // =========================================================================
+    // UPDATE: Modify an existing diagnostic order requisition
+    // =========================================================================
+    @PostMapping("/update/{id}")
+    public String updateLabOrder(@PathVariable Long id,
+                                 @RequestParam String testCategory,
+                                 @RequestParam String department,
+                                 @RequestParam String urgencyLevel,
+                                 @RequestParam String orderDate,
+                                 @RequestParam String expectedDate,
+                                 RedirectAttributes redirectAttributes) {
+
+        Optional<LabOrder> orderOpt = labOrderRepository.findById(id);
+        if (orderOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: Lab order #LAB-" + id + " does not exist.");
+            return "redirect:/lab-orders";
+        }
+
+        String validationError = validateOrderPayload(testCategory, department, urgencyLevel, orderDate, expectedDate, false);
+        if (validationError != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationError);
+            return "redirect:/lab-orders/edit/" + id;
+        }
+
+        LocalDate parsedOrderDate = LocalDate.parse(orderDate.trim());
+        LocalDate parsedExpectedDate = LocalDate.parse(expectedDate.trim());
+        String normalizedUrgency = urgencyLevel.trim().toUpperCase();
+
+        LabOrder order = orderOpt.get();
+        order.setTestCategory(testCategory.trim());
+        order.setDepartment(department.trim());
+        order.setUrgencyLevel(normalizedUrgency);
+        order.setOrderDate(parsedOrderDate.toString());
+        order.setExpectedDate(parsedExpectedDate.toString());
+
+        labOrderRepository.save(order);
+        redirectAttributes.addFlashAttribute("successMessage", "Lab order #LAB-" + id + " updated successfully.");
+        return "redirect:/lab-orders";
+    }
+
+    // =========================================================================
     // UPDATE: Advance status (PENDING -> SAMPLE_COLLECTED -> COMPLETED)
+    // =========================================================================
     @PostMapping("/advance-status/{id}")
     public String advanceOrderStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         labOrderRepository.findById(id).ifPresent(order -> {
@@ -158,11 +173,71 @@ public class LabOrderController {
         return "redirect:/lab-orders";
     }
 
+    // =========================================================================
     // DELETE: Cancel / Revoke an order
+    // =========================================================================
     @PostMapping("/delete/{id}")
     public String deleteLabOrder(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         labOrderRepository.deleteById(id);
         redirectAttributes.addFlashAttribute("successMessage", "Diagnostic requisition voided successfully.");
         return "redirect:/lab-orders";
+    }
+
+    // =========================================================================
+    // HELPER: Reusable Clinical Validation Guard
+    // =========================================================================
+    private String validateOrderPayload(String testCategory,
+                                        String department,
+                                        String urgencyLevel,
+                                        String orderDate,
+                                        String expectedDate,
+                                        boolean checkPastDate) {
+        if (testCategory == null || testCategory.trim().isEmpty()) {
+            return "Validation Error: Diagnostic test category cannot be left blank.";
+        }
+        if (department == null || department.trim().isEmpty()) {
+            return "Validation Error: Clinical department designation is mandatory.";
+        }
+
+        String normalizedUrgency = urgencyLevel != null ? urgencyLevel.trim().toUpperCase() : "";
+        if (!ALLOWED_URGENCIES.contains(normalizedUrgency)) {
+            return "Validation Error: Urgency level must be ROUTINE, URGENT, or STAT.";
+        }
+
+        if (orderDate == null || orderDate.trim().isEmpty()) {
+            return "Validation Error: Requisition order date is required.";
+        }
+
+        LocalDate parsedOrderDate;
+        try {
+            parsedOrderDate = LocalDate.parse(orderDate.trim());
+        } catch (DateTimeParseException e) {
+            return "Validation Error: Invalid requisition date format (YYYY-MM-DD expected).";
+        }
+
+        if (checkPastDate && parsedOrderDate.isBefore(LocalDate.now())) {
+            return "Clinical Guard: Requisition date cannot be set in the past.";
+        }
+
+        if (expectedDate == null || expectedDate.trim().isEmpty()) {
+            return "Validation Error: Expected result completion date is required.";
+        }
+
+        LocalDate parsedExpectedDate;
+        try {
+            parsedExpectedDate = LocalDate.parse(expectedDate.trim());
+        } catch (DateTimeParseException e) {
+            return "Validation Error: Invalid expected completion date format.";
+        }
+
+        if (parsedExpectedDate.isBefore(parsedOrderDate)) {
+            return "Chronological Error: Expected result date cannot precede the order date.";
+        }
+
+        if ("STAT".equals(normalizedUrgency) && parsedExpectedDate.isAfter(parsedOrderDate.plusDays(1))) {
+            return "Clinical Protocol Alert: STAT (Emergency) orders cannot exceed a 24-hour turnaround window.";
+        }
+
+        return null;
     }
 }

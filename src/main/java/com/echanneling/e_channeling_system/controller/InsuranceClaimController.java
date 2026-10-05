@@ -1,7 +1,7 @@
 package com.echanneling.e_channeling_system.controller;
 
-import com.echanneling.e_channeling_system.entity.InsuranceClaim;
-import com.echanneling.e_channeling_system.service.InsuranceClaimService;
+import com.echanneling.e_channeling_system.InsuranceClaim;
+import com.echanneling.e_channeling_system.InsuranceClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,9 @@ public class InsuranceClaimController {
         this.claimService = claimService;
     }
 
-    // Default route: visiting http://localhost:8080/insurance opens the admin claims dashboard
+    // Default Landing Route: Redirects to the Admin Claims Portal
     @GetMapping
-    public String index() {
+    public String defaultInsuranceView() {
         return "redirect:/insurance/admin/claims";
     }
 
@@ -78,6 +78,7 @@ public class InsuranceClaimController {
         return "insurance-audit-log";
     }
 
+    // Financial Admin: delete claim record
     @PostMapping("/admin/claims/{id}/delete")
     public String delete(@PathVariable Long id) {
         claimService.deleteClaim(id);

@@ -1,39 +1,33 @@
 package com.echanneling.e_channeling_system.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "NOTIFICATIONS")
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;            //Stores the notification title.
-    private String message;          // Stores the actual notification content.
-    private String type;            // e.g., "SYSTEM", "CRITICAL", "GENERAL"
-    private String preferenceRules; // e.g., "All Doctors / Patients"
+    private String title;
+    private String message;
+    private String type;
+    private String preferenceRules;
 
-    // Fields for Direct vs Broadcast targeting
-    private String recipientType;   // "BROADCAST" or "DIRECT"
-    private String patientId;       // Single ID or comma-separated IDs (e.g., "P-101, P-102")
+    public Notification() {
+    }
 
-    //default constructor.
-
-    public Notification() {}
-
-    public Notification(Long id, String title, String message, String type, String preferenceRules, String recipientType, String patientId) {
-        this.id = id;
+    public Notification(String title, String message, String type, String preferenceRules) {
         this.title = title;
         this.message = message;
         this.type = type;
         this.preferenceRules = preferenceRules;
-        this.recipientType = recipientType;
-        this.patientId = patientId;
     }
-
-//Getter and Setter
 
     public Long getId() {
         return id;
@@ -73,21 +67,5 @@ public class Notification {
 
     public void setPreferenceRules(String preferenceRules) {
         this.preferenceRules = preferenceRules;
-    }
-
-    public String getRecipientType() {
-        return recipientType;
-    }
-
-    public void setRecipientType(String recipientType) {
-        this.recipientType = recipientType;
-    }
-
-    public String getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
     }
 }

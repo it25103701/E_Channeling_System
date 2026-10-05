@@ -1,9 +1,12 @@
 package com.echanneling.e_channeling_system.repository;
 
-import com.echanneling.e_channeling_system.entity.InsuranceClaim;
+import com.echanneling.e_channeling_system.InsuranceClaim;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
 public interface InsuranceClaimRepository extends JpaRepository<InsuranceClaim, Long> {
+
+    List<InsuranceClaim> findByPatientName(String patientName);
+
+    List<InsuranceClaim> findByStatus(String status);
 }
