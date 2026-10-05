@@ -7,7 +7,7 @@ import com.echanneling.e_channeling_system.pattern.strategy.OrderProcessingConte
 import com.echanneling.e_channeling_system.pattern.strategy.RoutinePriorityStrategy;
 import com.echanneling.e_channeling_system.pattern.strategy.StatUrgentPriorityStrategy;
 import com.echanneling.e_channeling_system.repository.AppointmentRepository;
-import com.echanneling.e_channeling_system.repository.LabOrderRepository;
+import com.echanneling.e_channeling_system.service.LabOrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,57 +18,43 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Controller managing Diagnostic Test Requisitions and Laboratory Workflows (UC-06).
- * Integrates Factory and Strategy design patterns to enforce department routing,
- * turnaround calculation, and clinical lifecycle progression.
- */
 @Controller
 @RequestMapping("/lab-orders")
 public class LabOrderController {
 
-    private final LabOrderRepository labOrderRepository;
+    private final LabOrderService labOrderService;
     private final AppointmentRepository appointmentRepository;
 
     private static final Set<String> ALLOWED_URGENCIES = Set.of("ROUTINE", "URGENT", "STAT");
 
-    public LabOrderController(LabOrderRepository labOrderRepository,
+    public LabOrderController(LabOrderService labOrderService,
                               AppointmentRepository appointmentRepository) {
-        this.labOrderRepository = labOrderRepository;
+        this.labOrderService = labOrderService;
         this.appointmentRepository = appointmentRepository;
     }
 
-    // =========================================================================
-    // READ: View all active diagnostic orders
-    // =========================================================================
     @GetMapping
     public String getAllLabOrders(Model model) {
-        model.addAttribute("labOrders", labOrderRepository.findAll());
+        model.addAttribute("labOrders", labOrderService.getAllLabOrders());
         model.addAttribute("appointmentCount", appointmentRepository.count());
         model.addAttribute("editingOrder", null);
         return "lab-orders";
     }
 
-    // =========================================================================
-    // READ / EDIT: Load selected requisition into edit mode
-    // =========================================================================
     @GetMapping("/edit/{id}")
     public String showEditOrderForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<LabOrder> orderOpt = labOrderRepository.findById(id);
+        Optional<LabOrder> orderOpt = labOrderService.getLabOrderById(id);
         if (orderOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Lab order #LAB-" + id + " not found.");
             return "redirect:/lab-orders";
         }
 
-        model.addAttribute("labOrders", labOrderRepository.findAll());
+        model.addAttribute("labOrders", labOrderService.getAllLabOrders());
         model.addAttribute("appointmentCount", appointmentRepository.count());
         model.addAttribute("editingOrder", orderOpt.get());
         return "lab-orders";
     }
 
-    // =========================================================================
-    // CREATE: Place a new lab diagnostic order with strict validation
-    // =========================================================================
     @PostMapping("/create")
     public String createLabOrder(@RequestParam String testCategory,
                                  @RequestParam String department,
@@ -96,11 +82,9 @@ public class LabOrderController {
             context.setStrategy(new RoutinePriorityStrategy());
         }
 
-        // Link appointment reference
         long latestApptId = appointmentRepository.count();
         Long refId = latestApptId > 0 ? latestApptId : 101L;
 
-        // Persist verified entity
         LabOrder order = new LabOrder(
                 testCategory.trim(),
                 department.trim(),
@@ -111,14 +95,11 @@ public class LabOrderController {
                 "PENDING"
         );
 
-        labOrderRepository.save(order);
+        labOrderService.saveLabOrder(order);
         redirectAttributes.addFlashAttribute("successMessage", "Order #" + testCategory.trim() + " registered and verified successfully.");
         return "redirect:/lab-orders";
     }
 
-    // =========================================================================
-    // UPDATE: Modify an existing diagnostic order requisition
-    // =========================================================================
     @PostMapping("/update/{id}")
     public String updateLabOrder(@PathVariable Long id,
                                  @RequestParam String testCategory,
@@ -128,7 +109,7 @@ public class LabOrderController {
                                  @RequestParam String expectedDate,
                                  RedirectAttributes redirectAttributes) {
 
-        Optional<LabOrder> orderOpt = labOrderRepository.findById(id);
+        Optional<LabOrder> orderOpt = labOrderService.getLabOrderById(id);
         if (orderOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Lab order #LAB-" + id + " does not exist.");
             return "redirect:/lab-orders";
@@ -151,41 +132,32 @@ public class LabOrderController {
         order.setOrderDate(parsedOrderDate.toString());
         order.setExpectedDate(parsedExpectedDate.toString());
 
-        labOrderRepository.save(order);
+        labOrderService.saveLabOrder(order);
         redirectAttributes.addFlashAttribute("successMessage", "Lab order #LAB-" + id + " updated successfully.");
         return "redirect:/lab-orders";
     }
 
-    // =========================================================================
-    // UPDATE: Advance status (PENDING -> SAMPLE_COLLECTED -> COMPLETED)
-    // =========================================================================
     @PostMapping("/advance-status/{id}")
     public String advanceOrderStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        labOrderRepository.findById(id).ifPresent(order -> {
+        labOrderService.getLabOrderById(id).ifPresent(order -> {
             if ("PENDING".equals(order.getStatus())) {
                 order.setStatus("SAMPLE_COLLECTED");
             } else if ("SAMPLE_COLLECTED".equals(order.getStatus())) {
                 order.setStatus("COMPLETED");
             }
-            labOrderRepository.save(order);
+            labOrderService.saveLabOrder(order);
         });
         redirectAttributes.addFlashAttribute("successMessage", "Order lifecycle transitioned successfully.");
         return "redirect:/lab-orders";
     }
 
-    // =========================================================================
-    // DELETE: Cancel / Revoke an order
-    // =========================================================================
     @PostMapping("/delete/{id}")
     public String deleteLabOrder(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        labOrderRepository.deleteById(id);
+        labOrderService.deleteLabOrder(id);
         redirectAttributes.addFlashAttribute("successMessage", "Diagnostic requisition voided successfully.");
         return "redirect:/lab-orders";
     }
 
-    // =========================================================================
-    // HELPER: Reusable Clinical Validation Guard
-    // =========================================================================
     private String validateOrderPayload(String testCategory,
                                         String department,
                                         String urgencyLevel,
