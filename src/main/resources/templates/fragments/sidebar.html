@@ -11,7 +11,7 @@
 
     <div class="sidebar-heading">Clinical Modules</div>
 
-    <!-- Lab Orders Link (UC-06) -->
+    <!-- Lab Orders Link (Your Module: UC-06) -->
     <a th:href="@{/lab-orders}" class="sidebar-link" th:classappend="${activeTab == 'lab-orders'} ? ' active' : ''">
         <i class="fas fa-flask-vial"></i>
         <div>
@@ -30,7 +30,7 @@
     </a>
 
     <!-- Doctor Schedules Link (UC-03) -->
-    <a th:href="@{/doctor-schedule}" class="sidebar-link" th:classappend="${activeTab == 'schedules'} ? ' active' : ''">
+    <a href="/doctor-schedules" class="sidebar-link" th:classappend="${activeTab == 'schedules'} ? ' active' : ''">
         <i class="fas fa-user-doctor text-warning"></i>
         <div>
             <div>Doctor Schedules</div>
@@ -39,7 +39,7 @@
     </a>
 
     <!-- Notifications Link (UC-05) -->
-    <a th:href="@{/notifications}" class="sidebar-link" th:classappend="${activeTab == 'notifications'} ? ' active' : ''">
+    <a href="/notifications" class="sidebar-link" th:classappend="${activeTab == 'notifications'} ? ' active' : ''">
         <i class="fas fa-bell text-danger"></i>
         <div>
             <div>Notifications</div>
@@ -47,16 +47,16 @@
         </div>
     </a>
 
-    <!-- Insurance Claims Link (Imanjith's Module: UC-04) -->
+    <!-- Insurance Link (UC-04 / Claims) -->
     <a th:href="@{/insurance}" class="sidebar-link" th:classappend="${activeTab == 'insurance'} ? ' active' : ''">
         <i class="fas fa-shield-halved text-success"></i>
         <div>
-            <div>Insurance Claims</div>
-            <small th:class="${activeTab == 'insurance'} ? 'text-white-50' : 'text-muted'" style="font-size: 0.7rem;">UC-04 Financial</small>
+            <div>Insurance &amp; Claims</div>
+            <small th:class="${activeTab == 'insurance'} ? 'text-white-50' : 'text-muted'" style="font-size: 0.7rem;">UC-04 Policy &amp; Claims</small>
         </div>
     </a>
 
-    <div class="sidebar-heading mt-3">Persistence & Storage</div>
+    <div class="sidebar-heading mt-3">Persistence &amp; Storage</div>
     <a href="/h2-console" target="_blank" class="sidebar-link">
         <i class="fas fa-database text-light"></i>
         <div>

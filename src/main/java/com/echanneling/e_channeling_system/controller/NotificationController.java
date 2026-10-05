@@ -1,12 +1,10 @@
 package com.echanneling.e_channeling_system.controller;
 
-import com.echanneling.e_channeling_system.entity.Notification;
 import com.echanneling.e_channeling_system.service.NotificationService;
+import com.echanneling.e_channeling_system.entity.Notification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/notifications")
@@ -18,31 +16,36 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    // =========================================
-    // VIEW ALL NOTIFICATIONS (GET /notifications)
-    // =========================================
+    // 1. Read: Display Notifications Table & Empty Form
     @GetMapping
     public String showNotificationsPage(Model model) {
-        List<Notification> notifications = notificationService.getAllNotifications();
-        model.addAttribute("notifications", notifications);
+        model.addAttribute("notifications", notificationService.getAllNotifications());
         model.addAttribute("notification", new Notification());
         return "notifications";
     }
 
-    // =========================================
-    // CREATE NOTIFICATION (POST /notifications/send)
-    // =========================================
-    @PostMapping("/send")
-    public String sendNotification(@ModelAttribute("notification") Notification notification) {
-        notificationService.createNotification(notification);
+    // 2. Create / Update: Process Form Submission
+    @PostMapping("/save")
+    public String saveNotification(@ModelAttribute("notification") Notification notification) {
+        if (notification.getId() != null) {
+            notificationService.updateNotification(notification.getId(), notification);
+        } else {
+            notificationService.createNotification(notification);
+        }
         return "redirect:/notifications";
     }
 
-    // =========================================
-    // DELETE NOTIFICATION (GET /notifications/delete/{id})
-    // =========================================
+    // 3. Edit: Populate Form with Existing Record Data
+    @GetMapping("/edit/{id}")
+    public String editNotification(@PathVariable Long id, Model model) {
+        model.addAttribute("notifications", notificationService.getAllNotifications());
+        model.addAttribute("notification", notificationService.getById(id));
+        return "notifications";
+    }
+
+    // 4. Delete: Remove Record and Refresh View
     @GetMapping("/delete/{id}")
-    public String deleteNotification(@PathVariable("id") Long id) {
+    public String deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotification(id);
         return "redirect:/notifications";
     }
