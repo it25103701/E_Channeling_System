@@ -1,5 +1,7 @@
-package com.echanneling.e_channeling_system;
+package com.echanneling.e_channeling_system.controller;
 
+import com.echanneling.e_channeling_system.InsuranceClaim;
+import com.echanneling.e_channeling_system.InsuranceClaimService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

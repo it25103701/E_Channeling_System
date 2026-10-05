@@ -1,6 +1,8 @@
 package com.echanneling.e_channeling_system;
 
 import com.echanneling.e_channeling_system.dto.AppointmentResponse;
+import com.echanneling.e_channeling_system.repository.ClaimAuditLogRepository;
+import com.echanneling.e_channeling_system.repository.InsuranceClaimRepository;
 import com.echanneling.e_channeling_system.service.AppointmentService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
