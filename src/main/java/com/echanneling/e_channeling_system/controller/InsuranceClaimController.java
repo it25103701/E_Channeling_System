@@ -14,6 +14,12 @@ public class InsuranceClaimController {
         this.claimService = claimService;
     }
 
+    // Default Landing Route: Redirects to the Admin Claims Portal
+    @GetMapping
+    public String defaultInsuranceView() {
+        return "redirect:/insurance/admin/claims";
+    }
+
     // Patient: show the claim form
     @GetMapping("/claim/new")
     public String showClaimForm(Model model) {
@@ -62,6 +68,7 @@ public class InsuranceClaimController {
         claimService.cancelClaim(id, reason);
         return "redirect:/insurance/admin/claims";
     }
+
     // Financial Admin: view the audit log
     @GetMapping("/admin/audit-log")
     public String auditLog(Model model) {
@@ -69,10 +76,10 @@ public class InsuranceClaimController {
         return "insurance-audit-log";
     }
 
+    // Financial Admin: delete claim record
     @PostMapping("/admin/claims/{id}/delete")
     public String delete(@PathVariable Long id) {
         claimService.deleteClaim(id);
         return "redirect:/insurance/admin/claims";
     }
 }
-

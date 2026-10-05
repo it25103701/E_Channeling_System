@@ -5,6 +5,7 @@ import java.util.List;
 
 @Service
 public class NotificationService {
+
     private final NotificationRepository repository;
 
     public NotificationService(NotificationRepository repository) {
